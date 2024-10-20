@@ -14,7 +14,7 @@ import (
 type User struct {
     ID       int    `json:"id"`
     Username string `json:"username"`
-    Password string `json:"-"`
+    Password string `json:"password"` // This should not have the "-" tag
 }
 
 func dbConn() (db *sql.DB) {
@@ -65,6 +65,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
             return
         }
 
+        // Hash the password before saving
         hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
         if err != nil {
             http.Error(w, "Error hashing password", http.StatusInternalServerError)
@@ -78,7 +79,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             panic(err.Error())
         }
-        _, err = insForm.Exec(user.Username, hashedPassword)
+        _, err = insForm.Exec(user.Username, hashedPassword) // Store hashed password
         if err != nil {
             http.Error(w, "Error creating user", http.StatusInternalServerError)
             return
@@ -93,27 +94,56 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 func Login(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodPost {
-        username := r.FormValue("username")
-        password := r.FormValue("password")
+        var user User
+        err := json.NewDecoder(r.Body).Decode(&user)
+        if err != nil {
+            http.Error(w, "Invalid request payload", http.StatusBadRequest)
+            return
+        }
+
+        // Debug log to check the values
+        log.Printf("Received user: %+v\n", user)
+
+        username := user.Username
+        password := user.Password
+
+        // Check for empty username or password
+        if username == "" || password == "" {
+            response, _ := json.Marshal(map[string]string{"error": "Username and password must not be empty"})
+            w.WriteHeader(http.StatusBadRequest) // Bad request for empty fields
+            w.Write(response) // Write the JSON response
+            return
+        }
 
         db := dbConn()
         defer db.Close()
 
-        var user User
-        err := db.QueryRow("SELECT id, password FROM users WHERE username=?", username).Scan(&user.ID, &user.Password)
+        var storedUser User
+        err = db.QueryRow("SELECT id, password FROM users WHERE username=?", username).Scan(&storedUser.ID, &storedUser.Password)
         if err != nil {
-            http.Error(w, "User not found", http.StatusUnauthorized)
+            response, _ := json.Marshal(map[string]string{"error": "User not found"})
+            w.WriteHeader(http.StatusUnauthorized) // Set the status code
+            w.Write(response) // Write the JSON response
             return
         }
 
-        err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+        // Debug log for the stored hashed password
+        log.Printf("Stored hashed password: %s\n", storedUser.Password)
+
+        // Compare the hashed password with the provided password
+        err = bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(password))
         if err != nil {
-            http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+            response, _ := json.Marshal(map[string]string{"error": "Invalid credentials"})
+            w.WriteHeader(http.StatusUnauthorized) // Set the status code
+            w.Write(response) // Write the JSON response
             return
         }
 
-        http.Redirect(w, r, "/", http.StatusSeeOther)
+        // If login is successful, return success message
+        w.WriteHeader(http.StatusOK)
+        json.NewEncoder(w).Encode(map[string]string{"message": "Login successful"})
     } else {
-        tmpl.ExecuteTemplate(w, "Login", nil)
+        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
     }
 }
+

@@ -1,21 +1,25 @@
+// src/app/app.module.ts
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
-// import { AppRoutingModule } from './app-routing.module';
+import { FormsModule } from '@angular/forms';
+import { AppRoutingModule } from './app-routing.module';  // Import AppRoutingModule
+
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './register/register.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     RegisterComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
-    // AppRoutingModule,
     HttpClientModule,
-    FormsModule // Add FormsModule here
+    FormsModule,
+    AppRoutingModule  // Include the AppRoutingModule here
   ],
   providers: [],
   bootstrap: [AppComponent]
