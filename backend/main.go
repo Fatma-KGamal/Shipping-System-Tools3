@@ -67,6 +67,23 @@ func Register(w http.ResponseWriter, r *http.Request) {
             return
         }
 
+        db := dbConn()
+        defer db.Close()
+
+        // Check if the username already exists
+        var existingUser User
+        err = db.QueryRow("SELECT id FROM users WHERE username=?", user.Username).Scan(&existingUser.ID)
+        if err != nil && err != sql.ErrNoRows {
+            http.Error(w, "Error checking for duplicate username", http.StatusInternalServerError)
+            return
+        }
+
+        if existingUser.ID != 0 {
+            // Username already exists
+            http.Error(w, "Username already exists", http.StatusConflict)
+            return
+        }
+
         // Hash the password before saving
         hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
         if err != nil {
@@ -74,14 +91,13 @@ func Register(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        db := dbConn()
-        defer db.Close()
-
+        // Insert new user
         insForm, err := db.Prepare("INSERT INTO users(username, password, email, phone) VALUES(?, ?, ?, ?)")
         if err != nil {
-            panic(err.Error())
+            http.Error(w, "Error preparing query", http.StatusInternalServerError)
+            return
         }
-        _, err = insForm.Exec(user.Username, hashedPassword, user.Email, user.Phone) // Insert all fields
+        _, err = insForm.Exec(user.Username, hashedPassword, user.Email, user.Phone)
         if err != nil {
             http.Error(w, "Error creating user", http.StatusInternalServerError)
             return
@@ -93,6 +109,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
     }
 }
+
 
 func Login(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodPost {
