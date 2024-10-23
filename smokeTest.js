@@ -4,7 +4,7 @@ const axios = require('axios');
 const registerUrl = 'http://localhost:4300/register';
 const loginUrl = 'http://localhost:4300/login';
 
-// Sample data for testing
+// Sample data for register
 const testUser = {
     username: 'testuser',
     email: 'testuser@example.com',
@@ -12,6 +12,7 @@ const testUser = {
     password: 'password123'
 };
 
+// Sample data for login
 const testLogin = {
     username: 'u',
     password: 'u'
