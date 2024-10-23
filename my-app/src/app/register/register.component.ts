@@ -1,4 +1,3 @@
-// src/app/register/register.component.ts
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -9,6 +8,8 @@ import { HttpClient } from '@angular/common/http';
 })
 export class RegisterComponent {
   username: string = '';
+  email: string = '';
+  phone: string = '';
   password: string = '';
 
   constructor(private http: HttpClient) {}
@@ -16,6 +17,8 @@ export class RegisterComponent {
   onSubmit() {
     const user = {
       username: this.username,
+      email: this.email,
+      phone: this.phone,
       password: this.password
     };
 
@@ -28,5 +31,4 @@ export class RegisterComponent {
         }
     );
   }
-
 }

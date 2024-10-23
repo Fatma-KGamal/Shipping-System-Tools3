@@ -15,6 +15,8 @@ type User struct {
     ID       int    `json:"id"`
     Username string `json:"username"`
     Password string `json:"password"` // This should not have the "-" tag
+    Email    string `json:"email"`
+    Phone    string `json:"phone"`
 }
 
 func dbConn() (db *sql.DB) {
@@ -75,11 +77,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
         db := dbConn()
         defer db.Close()
 
-        insForm, err := db.Prepare("INSERT INTO users(username, password) VALUES(?,?)")
+        insForm, err := db.Prepare("INSERT INTO users(username, password, email, phone) VALUES(?, ?, ?, ?)")
         if err != nil {
             panic(err.Error())
         }
-        _, err = insForm.Exec(user.Username, hashedPassword) // Store hashed password
+        _, err = insForm.Exec(user.Username, hashedPassword, user.Email, user.Phone) // Insert all fields
         if err != nil {
             http.Error(w, "Error creating user", http.StatusInternalServerError)
             return
