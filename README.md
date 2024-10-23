@@ -9,3 +9,9 @@
 ## apis
 - http://localhost:4200/register
 - http://localhost:4200/login
+
+## smoke test 
+in terminal run the following :
+- npm install axios
+- node smokeTest.js
+  
