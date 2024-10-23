@@ -1,0 +1,84 @@
+/* Style for the container div */
+div {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling for the form */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Style for the headings */
+h2 {
+    text-align: center;
+    font-family: 'Mulish', sans-serif;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Label styling */
+label {
+    font-family: 'Mulish', sans-serif;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+/* Style for input fields */
+input[type="text"],
+input[type="password"] {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Mulish', sans-serif;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+/* Change border color on focus */
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #458ff6;
+    outline: none;
+}
+
+/* Button styling */
+button {
+    padding: 10px;
+    background-color: #458ff6;
+    color: white;
+    font-family: 'Mulish', sans-serif;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Change button background on hover */
+button:hover {
+    background-color: #356cb3;
+}
+
+/* Responsive design */
+@media (max-width: 500px) {
+    div {
+        padding: 15px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 14px;
+    }
+}
