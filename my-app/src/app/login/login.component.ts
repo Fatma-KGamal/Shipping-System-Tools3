@@ -8,14 +8,16 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  username: string = '';
+  //username: string = '';
+  email: string = '';
   password: string = '';
 
   constructor(private http: HttpClient) {}
 
   onSubmit() {
     const credentials = {
-      username: this.username,
+      //username: this.username,
+      email: this.email,
       password: this.password
     };
 
