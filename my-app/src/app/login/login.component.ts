@@ -1,3 +1,4 @@
+// login.component.ts
 import { Component } from '@angular/core';
 import { AuthService } from '../auth.service';
 
@@ -9,7 +10,7 @@ import { AuthService } from '../auth.service';
 export class LoginComponent {
   email: string = '';
   password: string = '';
-  errorMessages: { email?: string; password?: string } = {};
+  errorMessages: { email?: string; password?: string; general?: string } = {};
   successMessage: string = '';
 
   constructor(private authService: AuthService) {}
@@ -36,16 +37,17 @@ export class LoginComponent {
       password: this.password
     };
 
+    // Attempt to login
     this.authService.login(credentials).subscribe(
       response => {
-        if (response.status === 200) {
+        if (response.message === 'Login successful') {
           console.log('User Logged in successfully!', response);
           this.successMessage = 'Login successful!';
         }
       },
       error => {
         console.error('Login failed:', error);
-        this.errorMessages.email = error.error.error || 'Login failed';
+        this.errorMessages.general = error.error?.error || 'Login failed';
       }
     );
   }

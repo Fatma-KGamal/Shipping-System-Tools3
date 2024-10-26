@@ -12,7 +12,7 @@ export class RegisterComponent {
   email: string = '';
   phone: string = '';
   password: string = '';
-  errorMessages: { username?: string; email?: string; phone?: string; password?: string } = {};
+  errorMessages: { username?: string; email?: string; phone?: string; password?: string; general?: string } = {};
   successMessage: string = '';
 
   constructor(private authService: AuthService, private router: Router) {}
@@ -64,14 +64,15 @@ export class RegisterComponent {
         this.successMessage = 'Registered successfully!';
         setTimeout(() => {
           this.router.navigate(['/login']);
-        }, 5000);
+        }, 2000);
       },
       error => {
         console.error('Error registering user:', error);
-        this.errorMessages.username = error.error.username || '';
-        this.errorMessages.email = error.error.email || '';
-        this.errorMessages.phone = error.error.phone || '';
-        this.errorMessages.password = error.error.password || 'Registration failed';
+        // this.errorMessages.username = error.error.username || '';
+        // this.errorMessages.email = error.error.email || '';
+        // this.errorMessages.phone = error.error.phone || '';
+        // this.errorMessages.password = error.error.password || 'Registration failed';
+        this.errorMessages.general = error.error?.error || 'Registration failed';
       }
     );
   }

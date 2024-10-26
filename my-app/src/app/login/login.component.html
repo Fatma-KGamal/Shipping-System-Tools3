@@ -14,8 +14,8 @@
       </div>
       <a routerLink="/register">Don't have an account? Register</a>
       <button type="submit">Login</button>
-
-      <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
     </form>
+    <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+    <div *ngIf="errorMessages.general" class="error-message">{{ errorMessages.general }}</div>
   </div>
 </div>

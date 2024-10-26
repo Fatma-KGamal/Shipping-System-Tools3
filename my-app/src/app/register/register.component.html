@@ -32,6 +32,7 @@
       <button type="submit">Register</button>
 
       <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+      <div *ngIf="errorMessages.general" class="error-message">{{ errorMessages.general }}</div>
     </form>
   </div>
 </div>
