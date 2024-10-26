@@ -7,13 +7,12 @@ import { LoginComponent } from './login/login.component';
 const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
-    { path: '', redirectTo: '/login', pathMatch: 'full' }, // Redirect to login by default
-    { path: '', redirectTo: '/register', pathMatch: 'full' }
+    { path: '', redirectTo: '/login', pathMatch: 'full'}
 
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],  // Importing the router
-    exports: [RouterModule]  // Exporting to use in AppModule
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule]
 })
 export class AppRoutingModule { }

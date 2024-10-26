@@ -1,84 +1,85 @@
-/* Style for the container div */
-div {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.login-container,
+.container {
+  font-family: Arial, sans-serif;
+  width: 50%;
+  margin: 0 auto;
+  padding: 30px;
 }
 
-/* Styling for the form */
-form {
-    display: flex;
-    flex-direction: column;
+.container {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgb(235, 232, 232);
+  border-radius: 8px;
+  padding: 20px;
 }
 
-/* Style for the headings */
 h2 {
-    text-align: center;
-    font-family: 'Mulish', sans-serif;
-    color: #333;
-    margin-bottom: 20px;
+  text-align: center;
+  color: #007bff;
+  margin-bottom: 20px;
 }
 
-/* Label styling */
-label {
-    font-family: 'Mulish', sans-serif;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #333;
+.form-group {
+  margin-bottom: 20px;
 }
 
-/* Style for input fields */
 input[type="text"],
 input[type="password"] {
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-family: 'Mulish', sans-serif;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
+  width: 95%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  margin-top: 5px;
+  font-size: 16px;
 }
 
-/* Change border color on focus */
-input[type="text"]:focus,
-input[type="password"]:focus {
-    border-color: #458ff6;
-    outline: none;
+input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-/* Button styling */
 button {
-    padding: 10px;
-    background-color: #458ff6;
-    color: white;
-    font-family: 'Mulish', sans-serif;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  margin-top: 15px;
 }
 
-/* Change button background on hover */
 button:hover {
-    background-color: #356cb3;
+  background-color: #80aacf;
+  color: black;
 }
 
-/* Responsive design */
-@media (max-width: 500px) {
-    div {
-        padding: 15px;
-    }
+a {
+  text-decoration: none;
+  color: #007bff;
+  display: block;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
 
-    input[type="text"],
-    input[type="password"] {
-        font-size: 14px;
-    }
+a:hover {
+  text-decoration: underline;
+}
 
-    button {
-        font-size: 14px;
-    }
+.success-message {
+  color: #28a745;
+  font-size: 16px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 5px;
+  padding: 5px;
 }
