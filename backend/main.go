@@ -202,7 +202,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 
 		// Updated query to match `order` table schema
-		insForm, err := db.Prepare("INSERT INTO `order` (pickup_location, dropoff_location, package_details, delivery_time, user_id, status) VALUES (?, ?, ?, ?, ?, ?)")
+		insForm, err := db.Prepare("INSERT INTO `orders` (pickup_location, dropoff_location, package_details, delivery_time, user_id, status) VALUES (?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			http.Error(w, "Error preparing query", http.StatusInternalServerError)
 			return
@@ -243,7 +243,7 @@ func GetUserOrders(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 
 		// Query to fetch all orders for the specified user
-		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at FROM `order` WHERE user_id = ?", userID)
+		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at FROM `orders` WHERE user_id = ?", userID)
 		if err != nil {
 			http.Error(w, "Error fetching orders", http.StatusInternalServerError)
 			return
@@ -309,14 +309,12 @@ func GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 
 		var order Order
-		err := db.QueryRow("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at FROM `order` WHERE order_id = ?", orderID).Scan(
+		err := db.QueryRow("SELECT order_id, pickup_location, dropoff_location, package_details, status ,  created_at, updated_at FROM `orders` WHERE order_id = ?", orderID).Scan(
 			&order.ID,
 			&order.PickupLocation,
 			&order.DropoffLocation,
 			&order.PackageDetails,
-			&order.DeliveryTime,
 			&order.Status,
-			&order.CourierID,
 			&order.CreatedAt,
 			&order.UpdatedAt,
 		)
