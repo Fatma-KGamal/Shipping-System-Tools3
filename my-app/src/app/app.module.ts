@@ -10,6 +10,7 @@ import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
 import { OrderComponent } from './order/order.component';
 import { OrderListComponent } from './order-list/order-list.component';
+import { HomeComponent } from './home/home.component';
 
 
 
@@ -20,6 +21,7 @@ import { OrderListComponent } from './order-list/order-list.component';
     LoginComponent,
     OrderComponent,
     OrderListComponent,
+    HomeComponent,
     
   ],
   imports: [

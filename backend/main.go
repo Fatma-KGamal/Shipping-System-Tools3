@@ -138,6 +138,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 }
 
 // Login handles user login
+// now returns id of the logged in user along with success message
 func Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		var user User
@@ -173,12 +174,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Return user ID along with success message
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Login successful"})
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"message": "Login successful",
+			"userId":  storedUser.ID, // Include the user ID in the response
+		})
 	} else {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
+
+
 
 // CreateOrder handles new order creation
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
