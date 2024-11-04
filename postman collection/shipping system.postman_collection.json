@@ -151,6 +151,14 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "delete pending orders",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
 		}
 	]
 }
