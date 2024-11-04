@@ -85,109 +85,133 @@ func handleCORS(next http.HandlerFunc) http.HandlerFunc {
 
 // Register handles user registration
 func Register(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST
 	if r.Method == http.MethodPost {
 		var user User
 
+		// Decode the JSON request body into the User struct
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
+		// Ensure to close the request body after reading
 		defer r.Body.Close()
 
+		// Establish database connection
 		db := dbConn()
-		defer db.Close()
+		defer db.Close() // Ensure the connection is closed when the function returns
 
+		// Validate required fields
 		if user.Username == "" || user.Password == "" || user.Email == "" || user.Phone == "" {
 			http.Error(w, "All fields are required", http.StatusBadRequest)
 			return
 		}
 
 		var id int
+
+		// Check if the username already exists in the database
 		err = db.QueryRow("SELECT id FROM users WHERE username=?", user.Username).Scan(&id)
 		if err == nil {
 			http.Error(w, "Username already exists", http.StatusConflict)
 			return
 		}
 
+		// Check if the email already exists in the database
 		err = db.QueryRow("SELECT id FROM users WHERE email=?", user.Email).Scan(&id)
 		if err == nil {
 			http.Error(w, "Email already exists", http.StatusConflict)
 			return
 		}
 
+		// Hash the user's password for secure storage
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		if err != nil {
 			http.Error(w, "Error hashing password", http.StatusInternalServerError)
 			return
 		}
 
+		// Prepare the SQL statement for inserting the new user
 		insForm, err := db.Prepare("INSERT INTO users(username, password, email, phone) VALUES(?, ?, ?, ?)")
 		if err != nil {
 			http.Error(w, "Error preparing query", http.StatusInternalServerError)
 			return
 		}
+		// Execute the prepared statement
 		_, err = insForm.Exec(user.Username, hashedPassword, user.Email, user.Phone)
 		if err != nil {
 			http.Error(w, "Error creating user", http.StatusInternalServerError)
 			return
 		}
 
+		// Respond with a 201 Created status and a success message
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
 	} else {
+		// Respond with Method Not Allowed for unsupported request methods
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
 // Login handles user login
-// now returns id of the logged in user along with success message
+// Now returns the ID of the logged-in user along with a success message
 func Login(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST
 	if r.Method == http.MethodPost {
 		var user User
 
+		// Decode the JSON request body into the User struct
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
+		// Ensure to close the request body after reading
 		defer r.Body.Close()
 
+		// Extract email and password from the user struct
 		email := user.Email
 		password := user.Password
 
+		// Validate that email and password are provided
 		if email == "" || password == "" {
 			http.Error(w, "Email and password are required", http.StatusBadRequest)
 			return
 		}
 
+		// Establish database connection
 		db := dbConn()
-		defer db.Close()
+		defer db.Close() // Ensure the connection is closed when the function returns
 
 		var storedUser User
+
+		// Retrieve the user record from the database by email
 		err = db.QueryRow("SELECT id, password FROM users WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
 		if err != nil {
+			// If no user is found, return an unauthorized status
 			http.Error(w, "User not found", http.StatusUnauthorized)
 			return
 		}
 
+		// Compare the provided password with the stored hashed password
 		err = bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(password))
 		if err != nil {
+			// If the passwords do not match, return an unauthorized status
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			return
 		}
 
-		// Return user ID along with success message
+		// Successful login: return user ID along with success message
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"message": "Login successful",
 			"userId":  storedUser.ID, // Include the user ID in the response
 		})
 	} else {
+		// Respond with Method Not Allowed for unsupported request methods
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
-
 
 
 // CreateOrder handles new order creation
@@ -237,12 +261,9 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 }
 
 
-
 // GetUserOrders handles fetching orders for a specific user
 func GetUserOrders(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		// Assuming the user ID is provided as a query parameter for simplicity
-		// Alternatively, retrieve it from an authentication token or session
 		userID := r.URL.Query().Get("user_id")
 		if userID == "" {
 			http.Error(w, "User ID is required", http.StatusBadRequest)
@@ -265,8 +286,8 @@ func GetUserOrders(w http.ResponseWriter, r *http.Request) {
 		// Loop through rows and scan each order's data into an Order struct
 		for rows.Next() {
 			var order Order
-			var deliveryTime sql.NullString // Use NullString to handle nullable timestamps
-			var courierID sql.NullInt64     // Use NullInt64 to handle nullable courier_id
+			var deliveryTime sql.NullString 
+			var courierID sql.NullInt64     
 
 			err := rows.Scan(
 				&order.ID, &order.PickupLocation, &order.DropoffLocation,
@@ -302,8 +323,6 @@ func GetUserOrders(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
-
-
 
 
 // GetOrderDetails handles fetching detailed information for a specific order
@@ -345,6 +364,7 @@ func GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
+
 
 // DeleteOrder handles the deletion of an order by ID
 func DeleteOrder(w http.ResponseWriter, r *http.Request) {
