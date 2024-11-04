@@ -1,73 +1,13 @@
 {
 	"info": {
-		"_postman_id": "b9c300c1-8723-4cc7-89e2-7bca1a300ded",
+		"_postman_id": "4eaae2d1-35c7-4e05-afc8-92eb8fa88b9e",
 		"name": "shipping system",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "31541653"
+		"_exporter_id": "34603567"
 	},
 	"item": [
 		{
-			"name": "http://localhost:8080/hello/api/persons/getNumber",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/lab7-web/app/users/cacl",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"lab7-web",
-						"app",
-						"users",
-						"cacl"
-					],
-					"query": [
-						{
-							"key": "Content-Type",
-							"value": "application/json",
-							"disabled": true
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:8080/lab7-web/app/users/calc",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n\"id\":1,\r\n\"name\":\"test\"\r\n\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/Trello-Clone/api/test/createBoard",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"Trello-Clone",
-						"api",
-						"test",
-						"createBoard"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:4300/get-order-details?order_id=1",
+			"name": "get-order-details",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -92,7 +32,7 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:4300/create-order",
+			"name": "create-order",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -120,35 +60,7 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:4300/get-order-details",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\"order_id\": 2\r\n}\r\n\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:4300/get-order-details",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "4300",
-					"path": [
-						"get-order-details"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:4300/get-user-orders?user_id=1",
+			"name": "get-user-orders",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -185,7 +97,7 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:4300/login",
+			"name": "login",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -213,7 +125,7 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:4300/register",
+			"name": "register",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -235,34 +147,6 @@
 					"port": "4300",
 					"path": [
 						"register"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "http://localhost:4300/create-order",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"pickup_location\": \"123 Start St\",\r\n    \"dropoff_location\": \"456 End Ave\",\r\n    \"package_details\": \"Books\",\r\n    \"delivery_time\": \"2024-11-05 15:00:00\",\r\n    \"user_id\": 1\r\n    \r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:4300/create-order",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "4300",
-					"path": [
-						"create-order"
 					]
 				}
 			},

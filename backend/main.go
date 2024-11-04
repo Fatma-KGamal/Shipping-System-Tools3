@@ -30,8 +30,8 @@ type Order struct {
 	UserID         int    `json:"user_id"`
 	Status         string `json:"status"`
 	CourierID      int    `json:"courier_id,omitempty"`
-	CreatedAt      string    `json:"created_at"` // or use time.Time for stricter type
-	UpdatedAt      string    `json:"updated_at"` // or use time.Time
+	CreatedAt      string    `json:"created_at"` 
+	UpdatedAt      string    `json:"updated_at"` 
 }
 
 // dbConn creates and returns a connection to the database
