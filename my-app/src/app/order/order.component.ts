@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../auth.service'; // Import AuthService
 
 @Component({
   selector: 'app-order',
@@ -9,13 +10,13 @@ import { HttpClient } from '@angular/common/http';
 export class OrderComponent {
   orderForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService) { // Inject AuthService
     this.orderForm = this.fb.group({
       pickupLocation: ['', Validators.required],
       dropoffLocation: ['', Validators.required],
       packageDetails: ['', Validators.required],
       deliveryTime: [''],
-      userId: [1, Validators.required], // Assuming you have user ID available
+      userId: [this.authService.getUserId(), Validators.required], // Dynamically get user ID
     });
   }
 
