@@ -1,18 +1,23 @@
 // home.component.ts
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
-  userId: string | null = null;
+export class HomeComponent {
+  userId: number | null = null; // Assuming you fetch this value appropriately
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private router: Router) {}
 
-  ngOnInit(): void {
-    this.userId = this.route.snapshot.paramMap.get('id');
+  // Navigate to Order List
+  goToOrderList() {
+    this.router.navigate(['/order-list']);
+  }
+
+  // Navigate to Order
+  goToOrder() {
+    this.router.navigate(['/order']);
   }
 }
