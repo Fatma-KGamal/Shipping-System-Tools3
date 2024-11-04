@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth.service'; // Import the AuthService
+import { Router } from '@angular/router'; // Import Router for navigation
 
 interface Order {
   id: number;
@@ -21,7 +22,7 @@ interface Order {
 export class OrderListComponent implements OnInit {
   orders: Order[] = []; // Use the Order interface to define the type
 
-  constructor(private http: HttpClient, private authService: AuthService) {} // Inject AuthService
+  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {} // Inject AuthService and Router
 
   ngOnInit() {
     this.getUserOrders(); // Fetch orders when the component initializes
@@ -56,5 +57,10 @@ export class OrderListComponent implements OnInit {
           console.error('Error deleting order', error);
         }
       );
+  }
+
+  // Method to navigate to the home page
+  goHome() {
+    this.router.navigate(['/home']); // Redirect to the home page
   }
 }
