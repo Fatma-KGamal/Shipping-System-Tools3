@@ -1,0 +1,26 @@
+<!-- src/app/order-list/order-list.component.html -->
+<h2>Your Orders</h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Pickup Location</th>
+      <th>Dropoff Location</th>
+      <th>Package Details</th>
+      <th>Delivery Time</th>
+      <th>Status</th>
+      <th>Created At</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let order of orders">
+      <td>{{ order.id }}</td>
+      <td>{{ order.pickup_location }}</td>
+      <td>{{ order.dropoff_location }}</td>
+      <td>{{ order.package_details }}</td>
+      <td>{{ order.delivery_time }}</td>
+      <td>{{ order.status }}</td>
+      <td>{{ order.created_at }}</td>
+    </tr>
+  </tbody>
+</table>

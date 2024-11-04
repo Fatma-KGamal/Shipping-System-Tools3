@@ -1,0 +1,15 @@
+<form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+    <label for="pickupLocation">Pickup Location:</label>
+    <input id="pickupLocation" formControlName="pickupLocation" required>
+  
+    <label for="dropoffLocation">Dropoff Location:</label>
+    <input id="dropoffLocation" formControlName="dropoffLocation" required>
+  
+    <label for="packageDetails">Package Details:</label>
+    <input id="packageDetails" formControlName="packageDetails" required>
+  
+    <label for="deliveryTime">Delivery Time:</label>
+    <input id="deliveryTime" formControlName="deliveryTime" type="datetime-local">
+  
+    <button type="submit">Create Order</button>
+</form>
