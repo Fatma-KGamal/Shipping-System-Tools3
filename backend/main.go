@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"text/template"
+	"strconv" 
 
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/crypto/bcrypt"
@@ -59,6 +60,7 @@ func main() {
 
 	http.HandleFunc("/get-user-orders", handleCORS(GetUserOrders)) // New endpoint for getting user orders
 	http.HandleFunc("/get-order-details", handleCORS(GetOrderDetails)) // New endpoint for getting order details
+	http.HandleFunc("/delete-order", handleCORS(DeleteOrder)) // New endpoint for order deletion
 
 
 
@@ -69,9 +71,10 @@ func main() {
 func handleCORS(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
+		// Handle preflight requests
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
 			return
@@ -338,6 +341,57 @@ func GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(order)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+// DeleteOrder handles the deletion of an order by ID
+func DeleteOrder(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodDelete {
+		orderIDStr := r.URL.Query().Get("order_id")
+		if orderIDStr == "" {
+			http.Error(w, "Order ID is required", http.StatusBadRequest)
+			return
+		}
+
+		orderID, err := strconv.Atoi(orderIDStr)
+		if err != nil {
+			http.Error(w, "Invalid order ID", http.StatusBadRequest)
+			return
+		}
+
+		db := dbConn()
+		defer db.Close()
+
+		var order Order
+		err = db.QueryRow("SELECT order_id, status FROM `orders` WHERE order_id = ?", orderID).Scan(&order.ID, &order.Status)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				http.Error(w, "Order not found", http.StatusNotFound)
+				return
+			}
+			// Log the error for further inspection
+			log.Printf("Error fetching order: %v", err)
+			http.Error(w, "Error fetching order", http.StatusInternalServerError)
+			return
+		}
+
+		if order.Status != "Pending" {
+			http.Error(w, "Cannot delete order: Order is not in Pending status", http.StatusConflict)
+			return
+		}
+
+		// Ensure correct column name and table reference
+		_, err = db.Exec("DELETE FROM `orders` WHERE order_id = ?", orderID)
+		if err != nil {
+			// Log the error for further inspection
+			log.Printf("Error deleting order: %v", err)
+			http.Error(w, "Error deleting order", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent) // No content response for successful deletion
 	} else {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}

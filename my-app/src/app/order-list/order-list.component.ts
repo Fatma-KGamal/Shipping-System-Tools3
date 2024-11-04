@@ -43,4 +43,18 @@ export class OrderListComponent implements OnInit {
       console.error('No user ID found'); // Handle the case when no user ID is available
     }
   }
+
+  deleteOrder(orderId: number) {
+    this.http.delete(`http://localhost:4300/delete-order?order_id=${orderId}`)
+      .subscribe(
+        response => {
+          console.log('Order deleted successfully', response);
+          // Remove the deleted order from the list
+          this.orders = this.orders.filter(order => order.id !== orderId);
+        },
+        error => {
+          console.error('Error deleting order', error);
+        }
+      );
+  }
 }
