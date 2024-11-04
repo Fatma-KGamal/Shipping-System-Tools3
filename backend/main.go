@@ -39,7 +39,7 @@ func dbConn() (db *sql.DB) {
 	dbDriver := "mysql"
 	dbUser := "root"
 	dbPass := "root"
-	dbName := "tools3"
+	dbName := "tools"
 	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@/"+dbName)
 	if err != nil {
 		log.Fatal("Database connection error: ", err)
