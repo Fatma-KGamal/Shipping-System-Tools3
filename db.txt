@@ -25,6 +25,14 @@ CREATE TABLE `courier` (
   PRIMARY KEY (`courier_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
+ALTER TABLE courier
+DROP COLUMN vehicle_info,
+DROP COLUMN created_at;
+
+ALTER TABLE courier
+ADD COLUMN email VARCHAR(255) NOT NULL,
+ADD COLUMN password VARCHAR(255) NOT NULL;
+
 
 CREATE TABLE `orders` (
   `order_id` int NOT NULL AUTO_INCREMENT,

@@ -5,6 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { OrderComponent } from './order/order.component';
 import { OrderListComponent } from './order-list/order-list.component';
 import { HomeComponent } from './home/home.component';
+import {CourierHomeComponent} from "./courier-home/courier-home.component";
 
 const routes: Routes = [
     { path: 'register', component: RegisterComponent },
@@ -12,7 +13,9 @@ const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: 'order', component: OrderComponent },
     { path: 'home', component: HomeComponent },  // Removed the ':id' parameter for simplicity
-    { path: 'order-list', component: OrderListComponent }
+    { path: 'order-list', component: OrderListComponent },
+    { path: 'courier-home', component:  CourierHomeComponent }
+
 ];
 
 @NgModule({

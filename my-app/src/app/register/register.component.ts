@@ -12,6 +12,7 @@ export class RegisterComponent {
   email: string = '';
   phone: string = '';       // Declare phone
   password: string = '';
+  user_type: string = '';   // Declare user_type
   errorMessages: { email?: string; password?: string; username?: string; phone?: string; general?: string } = {};
   successMessage: string = '';
 
@@ -40,7 +41,7 @@ export class RegisterComponent {
       return;
     }
 
-    const user = { username: this.username, email: this.email, phone: this.phone, password: this.password };
+    const user = { username: this.username, email: this.email, phone: this.phone, password: this.password , user_type: this.user_type};
 
     this.authService.register(user).subscribe(
       response => {

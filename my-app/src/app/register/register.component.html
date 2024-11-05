@@ -27,6 +27,15 @@
         <div *ngIf="errorMessages.password" class="error-message">{{ errorMessages.password }}</div>
       </div>
 
+      <div class="form-group">
+        <label>User Type:</label>
+        <input type="radio" id="user" [(ngModel)]="user_type" name="user_Type" value="user" required />
+        <label for="user">User</label>
+
+        <input type="radio" id="courier" [(ngModel)]="user_type" name="user_Type" value="courier" />
+        <label for="courier">Courier</label>
+      </div>
+
       <a routerLink="/login">Already have an account? Login</a>
 
       <button type="submit">Register</button>

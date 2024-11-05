@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 	"text/template"
-	"strconv" 
 
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/crypto/bcrypt"
@@ -19,20 +19,21 @@ type User struct {
 	Password string `json:"password"`
 	Email    string `json:"email"`
 	Phone    string `json:"phone"`
+	UserType string `json:"user_type"`
 }
 
 // Order struct holds order data
 type Order struct {
-	ID             int    `json:"id"`
-	PickupLocation string `json:"pickup_location"`
+	ID              int    `json:"id"`
+	PickupLocation  string `json:"pickup_location"`
 	DropoffLocation string `json:"dropoff_location"`
-	PackageDetails string `json:"package_details"`
-	DeliveryTime   string `json:"delivery_time,omitempty"`
-	UserID         int    `json:"user_id"`
-	Status         string `json:"status"`
-	CourierID      int    `json:"courier_id,omitempty"`
-	CreatedAt      string    `json:"created_at"` 
-	UpdatedAt      string    `json:"updated_at"` 
+	PackageDetails  string `json:"package_details"`
+	DeliveryTime    string `json:"delivery_time,omitempty"`
+	UserID          int    `json:"user_id"`
+	Status          string `json:"status"`
+	CourierID       int    `json:"courier_id,omitempty"`
+	CreatedAt       string `json:"created_at"`
+	UpdatedAt       string `json:"updated_at"`
 }
 
 // dbConn creates and returns a connection to the database
@@ -56,13 +57,15 @@ func main() {
 	log.Println("Server started on: http://localhost:4300")
 	http.HandleFunc("/register", handleCORS(Register))
 	http.HandleFunc("/login", handleCORS(Login))
-	http.HandleFunc("/create-order", handleCORS(CreateOrder)) // New endpoint for order creation
 
-	http.HandleFunc("/get-user-orders", handleCORS(GetUserOrders)) // New endpoint for getting user orders
+	http.HandleFunc("/create-order", handleCORS(CreateOrder))          // New endpoint for order creation
+	http.HandleFunc("/get-user-orders", handleCORS(GetUserOrders))     // New endpoint for getting user orders
 	http.HandleFunc("/get-order-details", handleCORS(GetOrderDetails)) // New endpoint for getting order details
-	http.HandleFunc("/delete-order", handleCORS(DeleteOrder)) // New endpoint for order deletion
+	http.HandleFunc("/delete-order", handleCORS(DeleteOrder))          // New endpoint for order deletion
 
-
+	http.HandleFunc("/accept-order", handleCORS(acceptOrder))              // New endpoint for accepting an order
+	http.HandleFunc("/get-courier-orders", handleCORS(getCourierOrders))   // New endpoint for getting courier orders
+	http.HandleFunc("/update-order-status", handleCORS(updateOrderStatus)) // New endpoint for updating order status
 
 	log.Fatal(http.ListenAndServe(":4300", nil))
 }
@@ -132,14 +135,33 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Prepare the SQL statement for inserting the new user
-		insForm, err := db.Prepare("INSERT INTO users(username, password, email, phone) VALUES(?, ?, ?, ?)")
+		//insForm, err := db.Prepare("INSERT INTO users(username, password, email, phone) VALUES(?, ?, ?, ?)")
+		var insForm *sql.Stmt
+		if user.UserType == "courier" {
+			insForm, err = db.Prepare("INSERT INTO courier(name, password, email, phone) VALUES(?, ?, ?, ?)")
+		} else {
+			insForm, err = db.Prepare("INSERT INTO users(username, password, email, phone) VALUES(?, ?, ?, ?)")
+		}
+		//if err != nil {
+		//	http.Error(w, "Error preparing query", http.StatusInternalServerError)
+		//	return
+		//}
+		//// Execute the prepared statement
+		//_, err = insForm.Exec(user.Username, hashedPassword, user.Email, user.Phone)
+		//if err != nil {
+		//	http.Error(w, "Error creating user", http.StatusInternalServerError)
+		//	return
+		//}
+
 		if err != nil {
+			log.Printf("Error preparing query: %v", err) // Log the error for more context
 			http.Error(w, "Error preparing query", http.StatusInternalServerError)
 			return
 		}
-		// Execute the prepared statement
+
 		_, err = insForm.Exec(user.Username, hashedPassword, user.Email, user.Phone)
 		if err != nil {
+			log.Printf("Error executing query: %v", err) // Log the error for more context
 			http.Error(w, "Error creating user", http.StatusInternalServerError)
 			return
 		}
@@ -184,13 +206,31 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		defer db.Close() // Ensure the connection is closed when the function returns
 
 		var storedUser User
+		var tableName string
 
-		// Retrieve the user record from the database by email
+		// Try to retrieve the user record from the users table by email
 		err = db.QueryRow("SELECT id, password FROM users WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
-		if err != nil {
-			// If no user is found, return an unauthorized status
-			http.Error(w, "User not found", http.StatusUnauthorized)
+		if err == sql.ErrNoRows {
+			// If no user is found in users, try to find the user in the couriers table
+			err = db.QueryRow("SELECT courier_id AS id, password FROM courier WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
+			if err == sql.ErrNoRows {
+				// If no user is found in both tables, return an unauthorized status
+				http.Error(w, "User not found", http.StatusUnauthorized)
+				return
+			} else if err != nil {
+				// Log and return database error if any other issue occurs
+				log.Println("Database query error (courier table):", err)
+				http.Error(w, "Database error", http.StatusInternalServerError)
+				return
+			}
+			tableName = "courier"
+		} else if err != nil {
+			// Log and return database error if any other issue occurs
+			log.Println("Database query error (user table):", err)
+			http.Error(w, "Database error", http.StatusInternalServerError)
 			return
+		} else {
+			tableName = "user"
 		}
 
 		// Compare the provided password with the stored hashed password
@@ -204,15 +244,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		// Successful login: return user ID along with success message
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"message": "Login successful",
-			"userId":  storedUser.ID, // Include the user ID in the response
+			"message":  "Login successful",
+			"userId":   storedUser.ID, // Include the user ID in the response
+			"userType": tableName,
 		})
 	} else {
 		// Respond with Method Not Allowed for unsupported request methods
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
-
 
 // CreateOrder handles new order creation
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
@@ -260,7 +300,6 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 // GetUserOrders handles fetching orders for a specific user
 func GetUserOrders(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
@@ -286,8 +325,8 @@ func GetUserOrders(w http.ResponseWriter, r *http.Request) {
 		// Loop through rows and scan each order's data into an Order struct
 		for rows.Next() {
 			var order Order
-			var deliveryTime sql.NullString 
-			var courierID sql.NullInt64     
+			var deliveryTime sql.NullString
+			var courierID sql.NullInt64
 
 			err := rows.Scan(
 				&order.ID, &order.PickupLocation, &order.DropoffLocation,
@@ -323,7 +362,6 @@ func GetUserOrders(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
-
 
 // GetOrderDetails handles fetching detailed information for a specific order
 func GetOrderDetails(w http.ResponseWriter, r *http.Request) {
@@ -364,7 +402,6 @@ func GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
-
 
 // DeleteOrder handles the deletion of an order by ID
 func DeleteOrder(w http.ResponseWriter, r *http.Request) {
@@ -416,3 +453,176 @@ func DeleteOrder(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
+
+func acceptOrder(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPut {
+		var order Order
+
+		err := json.NewDecoder(r.Body).Decode(&order)
+		if err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+
+		// Check for required fields
+		if order.ID == 0 || order.Status == "" || order.CourierID == 0 {
+			http.Error(w, "Missing required fields", http.StatusBadRequest)
+			return
+		}
+
+		db := dbConn()
+		defer db.Close()
+
+		// Prepare the SQL statement for updating the order status
+		updForm, err := db.Prepare("UPDATE `orders` SET status = ?, courier_id = ? WHERE order_id = ?")
+		if err != nil {
+			http.Error(w, "Error preparing query", http.StatusInternalServerError)
+			return
+		}
+		defer updForm.Close()
+
+		// Execute the prepared statement
+		res, err := updForm.Exec(order.Status, order.CourierID, order.ID)
+		if err != nil {
+			http.Error(w, "Error updating order status", http.StatusInternalServerError)
+			return
+		}
+
+		// Check if the order was found
+		rowsAffected, err := res.RowsAffected()
+		if err != nil {
+			http.Error(w, "Error checking rows affected", http.StatusInternalServerError)
+			return
+		}
+		if rowsAffected == 0 {
+			http.Error(w, "Order not found or unauthorized", http.StatusNotFound)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Order accepted successfully"})
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func getCourierOrders(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		courierID := r.URL.Query().Get("courier_id")
+		if courierID == "" {
+			http.Error(w, "Courier ID is required", http.StatusBadRequest)
+			return
+		}
+
+		db := dbConn()
+		defer db.Close()
+
+		// Query to fetch all orders for the specified user
+		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at FROM `orders` WHERE courier_id = ?", courierID)
+		if err != nil {
+			http.Error(w, "Error fetching orders", http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var orders []Order
+
+		// Loop through rows and scan each order's data into an Order struct
+		for rows.Next() {
+			var order Order
+			var deliveryTime sql.NullString
+			var courierID sql.NullInt64
+
+			err := rows.Scan(
+				&order.ID, &order.PickupLocation, &order.DropoffLocation,
+				&order.PackageDetails, &deliveryTime, &order.Status,
+				&courierID, &order.CreatedAt, &order.UpdatedAt,
+			)
+			if err != nil {
+				http.Error(w, "Error scanning order data", http.StatusInternalServerError)
+				return
+			}
+
+			// Handle nullable fields
+			if deliveryTime.Valid {
+				order.DeliveryTime = deliveryTime.String
+			}
+			if courierID.Valid {
+				order.CourierID = int(courierID.Int64)
+			}
+
+			orders = append(orders, order)
+		}
+
+		if err := rows.Err(); err != nil {
+			http.Error(w, "Error processing rows", http.StatusInternalServerError)
+			return
+		}
+
+		// Return orders as JSON
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(orders)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+// updateOrderStatus handles updating the status of an order for current logged in courier
+func updateOrderStatus(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPut {
+		var order Order
+
+		err := json.NewDecoder(r.Body).Decode(&order)
+		if err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+
+		// Check for required fields
+		if order.ID == 0 || order.Status == "" || order.CourierID == 0 {
+			http.Error(w, "Missing required fields", http.StatusBadRequest)
+			return
+		}
+
+		db := dbConn()
+		defer db.Close()
+
+		// Prepare the SQL statement for updating the order status
+		updForm, err := db.Prepare("UPDATE `orders` SET status = ? WHERE order_id = ? AND courier_id = ?")
+		if err != nil {
+			http.Error(w, "Error preparing query", http.StatusInternalServerError)
+			return
+		}
+		defer updForm.Close()
+
+		// Execute the prepared statement
+		res, err := updForm.Exec(order.Status, order.ID, order.CourierID)
+		if err != nil {
+			http.Error(w, "Error updating order status", http.StatusInternalServerError)
+			return
+		}
+
+		// Check if the order was found
+		rowsAffected, err := res.RowsAffected()
+		if err != nil {
+			http.Error(w, "Error checking rows affected", http.StatusInternalServerError)
+			return
+		}
+		if rowsAffected == 0 {
+			http.Error(w, "Order not found or unauthorized", http.StatusNotFound)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Order status updated successfully"})
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+//func manageOrdersPage(w http.ResponseWriter, r *http.Request) {
+//	tmpl.ExecuteTemplate(w, "manageOrders", nil)
+//}
