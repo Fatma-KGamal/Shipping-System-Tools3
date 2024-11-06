@@ -8,19 +8,20 @@ import { Router } from '@angular/router';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
-  username: string = '';   // Declare username
+  username: string = '';
   email: string = '';
-  phone: string = '';       // Declare phone
+  phone: string = '';
   password: string = '';
-  user_type: string = '';   // Declare user_type
+  user_type: string = '';
   errorMessages: { email?: string; password?: string; username?: string; phone?: string; general?: string } = {};
   successMessage: string = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   onSubmit() {
     this.errorMessages = {};
     this.successMessage = '';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     // Validate inputs
     if (!this.username) {
@@ -28,9 +29,19 @@ export class RegisterComponent {
     }
     if (!this.email) {
       this.errorMessages.email = 'Email is required';
+    } else {
+      // Email validation
+      if (!emailRegex.test(this.email)) {
+        this.errorMessages.email = 'Invalid email format';
+      }
     }
-    if (!this.phone) {
-      this.errorMessages.phone = 'Phone is required';
+    if (!this.password) {
+      this.errorMessages.password = 'Password is required';
+    } else {
+      // Password validation
+      if (this.password.length < 6) {
+        this.errorMessages.password = 'Password must be at least 6 characters long';
+      }
     }
     if (!this.password) {
       this.errorMessages.password = 'Password is required';
@@ -41,12 +52,15 @@ export class RegisterComponent {
       return;
     }
 
-    const user = { username: this.username, email: this.email, phone: this.phone, password: this.password , user_type: this.user_type};
+    const user = { username: this.username, email: this.email, phone: this.phone, password: this.password, user_type: this.user_type };
 
     this.authService.register(user).subscribe(
       response => {
-        this.successMessage = response.message; // Show success message
-        this.router.navigate(['/login']); // Navigate to login after registration
+        this.successMessage = response.message;
+        this.successMessage = 'Registered successfully!';
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
       },
       error => {
         this.errorMessages.general = error.error?.error || 'Registration failed';

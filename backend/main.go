@@ -52,20 +52,20 @@ func dbConn() (db *sql.DB) {
 // tmpl holds parsed templates
 var tmpl = template.Must(template.ParseGlob("form/*"))
 
-// main starts the HTTP server and defines routes
+// start the HTTP server and defines routes
 func main() {
 	log.Println("Server started on: http://localhost:4300")
 	http.HandleFunc("/register", handleCORS(Register))
 	http.HandleFunc("/login", handleCORS(Login))
 
-	http.HandleFunc("/create-order", handleCORS(CreateOrder))          // New endpoint for order creation
-	http.HandleFunc("/get-user-orders", handleCORS(GetUserOrders))     // New endpoint for getting user orders
-	http.HandleFunc("/get-order-details", handleCORS(GetOrderDetails)) // New endpoint for getting order details
-	http.HandleFunc("/delete-order", handleCORS(DeleteOrder))          // New endpoint for order deletion
+	http.HandleFunc("/create-order", handleCORS(CreateOrder))          
+	http.HandleFunc("/get-user-orders", handleCORS(GetUserOrders))     
+	http.HandleFunc("/get-order-details", handleCORS(GetOrderDetails)) 
+	http.HandleFunc("/delete-order", handleCORS(DeleteOrder))          
 
-	http.HandleFunc("/accept-order", handleCORS(acceptOrder))              // New endpoint for accepting an order
-	http.HandleFunc("/get-courier-orders", handleCORS(getCourierOrders))   // New endpoint for getting courier orders
-	http.HandleFunc("/update-order-status", handleCORS(updateOrderStatus)) // New endpoint for updating order status
+	http.HandleFunc("/accept-order", handleCORS(acceptOrder))             
+	http.HandleFunc("/get-courier-orders", handleCORS(getCourierOrders))   
+	http.HandleFunc("/update-order-status", handleCORS(updateOrderStatus)) 
 
 	log.Fatal(http.ListenAndServe(":4300", nil))
 }
@@ -88,7 +88,7 @@ func handleCORS(next http.HandlerFunc) http.HandlerFunc {
 
 // Register handles user registration
 func Register(w http.ResponseWriter, r *http.Request) {
-	// Check if the request method is POST
+	
 	if r.Method == http.MethodPost {
 		var user User
 
@@ -98,12 +98,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
-		// Ensure to close the request body after reading
+		
 		defer r.Body.Close()
 
-		// Establish database connection
 		db := dbConn()
-		defer db.Close() // Ensure the connection is closed when the function returns
+		defer db.Close() 
 
 		// Validate required fields
 		if user.Username == "" || user.Password == "" || user.Email == "" || user.Phone == "" {
@@ -127,14 +126,14 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Hash the user's password for secure storage
+		// Hash the user's password for secure storage before saving
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		if err != nil {
 			http.Error(w, "Error hashing password", http.StatusInternalServerError)
 			return
 		}
 
-		// Prepare the SQL statement for inserting the new user
+		// insert new user sql query
 		//insForm, err := db.Prepare("INSERT INTO users(username, password, email, phone) VALUES(?, ?, ?, ?)")
 		var insForm *sql.Stmt
 		if user.UserType == "courier" {
@@ -154,31 +153,30 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		//}
 
 		if err != nil {
-			log.Printf("Error preparing query: %v", err) // Log the error for more context
+			log.Printf("Error preparing query: %v", err) 
 			http.Error(w, "Error preparing query", http.StatusInternalServerError)
 			return
 		}
 
+		// execute query
 		_, err = insForm.Exec(user.Username, hashedPassword, user.Email, user.Phone)
 		if err != nil {
-			log.Printf("Error executing query: %v", err) // Log the error for more context
+			log.Printf("Error executing query: %v", err) 
 			http.Error(w, "Error creating user", http.StatusInternalServerError)
 			return
 		}
 
-		// Respond with a 201 Created status and a success message
+		
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
 	} else {
-		// Respond with Method Not Allowed for unsupported request methods
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
 // Login handles user login
-// Now returns the ID of the logged-in user along with a success message
 func Login(w http.ResponseWriter, r *http.Request) {
-	// Check if the request method is POST
+	
 	if r.Method == http.MethodPost {
 		var user User
 
@@ -188,10 +186,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
 		}
-		// Ensure to close the request body after reading
+		
 		defer r.Body.Close()
 
-		// Extract email and password from the user struct
 		email := user.Email
 		password := user.Password
 
@@ -201,31 +198,29 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Establish database connection
+		
 		db := dbConn()
-		defer db.Close() // Ensure the connection is closed when the function returns
+		defer db.Close() 
 
 		var storedUser User
 		var tableName string
 
-		// Try to retrieve the user record from the users table by email
+		// Get user by email from the user table
 		err = db.QueryRow("SELECT id, password FROM users WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
+		// If not found in users, get user by email from the courier table
 		if err == sql.ErrNoRows {
-			// If no user is found in users, try to find the user in the couriers table
 			err = db.QueryRow("SELECT courier_id AS id, password FROM courier WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
+			// If not found in both tables, return an unauthorized status
 			if err == sql.ErrNoRows {
-				// If no user is found in both tables, return an unauthorized status
 				http.Error(w, "User not found", http.StatusUnauthorized)
 				return
 			} else if err != nil {
-				// Log and return database error if any other issue occurs
 				log.Println("Database query error (courier table):", err)
 				http.Error(w, "Database error", http.StatusInternalServerError)
 				return
 			}
 			tableName = "courier"
 		} else if err != nil {
-			// Log and return database error if any other issue occurs
 			log.Println("Database query error (user table):", err)
 			http.Error(w, "Database error", http.StatusInternalServerError)
 			return
@@ -236,23 +231,23 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		// Compare the provided password with the stored hashed password
 		err = bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(password))
 		if err != nil {
-			// If the passwords do not match, return an unauthorized status
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			return
 		}
 
-		// Successful login: return user ID along with success message
+		// login successfull
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"message":  "Login successful",
-			"userId":   storedUser.ID, // Include the user ID in the response
+			"userId":   storedUser.ID, 
 			"userType": tableName,
 		})
 	} else {
-		// Respond with Method Not Allowed for unsupported request methods
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
+
+// User fFeatures 
 
 // CreateOrder handles new order creation
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
@@ -275,7 +270,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		db := dbConn()
 		defer db.Close()
 
-		// Updated query to match `order` table schema
+		// insert new order query
 		insForm, err := db.Prepare("INSERT INTO `orders` (pickup_location, dropoff_location, package_details, delivery_time, user_id, status) VALUES (?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			http.Error(w, "Error preparing query", http.StatusInternalServerError)
@@ -286,7 +281,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		// Set default order status to "Pending"
 		order.Status = "Pending"
 
-		// Execute query
+		// execute query
 		_, err = insForm.Exec(order.PickupLocation, order.DropoffLocation, order.PackageDetails, order.DeliveryTime, order.UserID, order.Status)
 		if err != nil {
 			http.Error(w, "Error creating order", http.StatusInternalServerError)
@@ -354,7 +349,6 @@ func GetUserOrders(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Return orders as JSON
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(orders)
@@ -394,7 +388,6 @@ func GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Return order details as JSON
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(order)
@@ -439,20 +432,22 @@ func DeleteOrder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Ensure correct column name and table reference
+		// execute query
 		_, err = db.Exec("DELETE FROM `orders` WHERE order_id = ?", orderID)
 		if err != nil {
-			// Log the error for further inspection
 			log.Printf("Error deleting order: %v", err)
 			http.Error(w, "Error deleting order", http.StatusInternalServerError)
 			return
 		}
 
-		w.WriteHeader(http.StatusNoContent) // No content response for successful deletion
+		w.WriteHeader(http.StatusNoContent) 
 	} else {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
+
+// Courier Features 
+
 
 func acceptOrder(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPut {
@@ -474,7 +469,6 @@ func acceptOrder(w http.ResponseWriter, r *http.Request) {
 		db := dbConn()
 		defer db.Close()
 
-		// Prepare the SQL statement for updating the order status
 		updForm, err := db.Prepare("UPDATE `orders` SET status = ?, courier_id = ? WHERE order_id = ?")
 		if err != nil {
 			http.Error(w, "Error preparing query", http.StatusInternalServerError)
@@ -482,7 +476,7 @@ func acceptOrder(w http.ResponseWriter, r *http.Request) {
 		}
 		defer updForm.Close()
 
-		// Execute the prepared statement
+		// execute query
 		res, err := updForm.Exec(order.Status, order.CourierID, order.ID)
 		if err != nil {
 			http.Error(w, "Error updating order status", http.StatusInternalServerError)

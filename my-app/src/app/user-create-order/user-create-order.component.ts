@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../auth.service'; // Import AuthService
-import { Router } from '@angular/router'; // Import Router for navigation
+import { AuthService } from '../auth.service'; 
+import { Router } from '@angular/router'; 
 
 @Component({
-  selector: 'app-order',
-  templateUrl: './order.component.html',
+  selector: 'app-user-create-order',
+  templateUrl: './user-create-order.component.html',
+  styleUrls: ['./user-create-order.component.css']
 })
-export class OrderComponent {
+export class UserCreateOrderComponent {
+
   orderForm: FormGroup;
   errorMessage: string | null = null; // Variable to hold error messages
 
@@ -55,6 +57,7 @@ export class OrderComponent {
 
   // Method to navigate to the home page
   goHome() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/user-home']);
   }
+
 }

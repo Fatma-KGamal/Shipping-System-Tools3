@@ -61,6 +61,6 @@ export class OrderListComponent implements OnInit {
 
   // Method to navigate to the home page
   goHome() {
-    this.router.navigate(['/home']); // Redirect to the home page
+    this.router.navigate(['/user-home']); // Redirect to the home page
   }
 }

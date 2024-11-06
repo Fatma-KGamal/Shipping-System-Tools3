@@ -3,21 +3,21 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
+  selector: 'app-courier-home',
+  templateUrl: './courier-homepage.component.html',
 })
-export class HomeComponent {
+export class CourierHomepageComponent {
   userId: number | null = null; // Assuming you fetch this value appropriately
 
   constructor(private router: Router) {}
 
   // Navigate to Order List
-  goToOrderList() {
-    this.router.navigate(['/order-list']);
+  goToAllOrders() {
+    this.router.navigate(['/courier-order-list']);
   }
 
   // Navigate to Order
-  goToOrder() {
-    this.router.navigate(['/order']);
+  goToMyOrders() {
+    this.router.navigate(['/courier-orders']);
   }
 }

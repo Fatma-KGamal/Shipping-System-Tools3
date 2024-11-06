@@ -13,12 +13,13 @@ export class LoginComponent {
   errorMessages: { email?: string; password?: string; general?: string } = {};
   successMessage: string = '';
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   onSubmit() {
     this.errorMessages = {};
     this.successMessage = '';
 
+    // Check for empty fields
     if (!this.email) {
       this.errorMessages.email = 'Email is required';
     }
@@ -26,6 +27,7 @@ export class LoginComponent {
       this.errorMessages.password = 'Password is required';
     }
 
+    // If there are errors, do not proceed
     if (Object.keys(this.errorMessages).length > 0) {
       return;
     }
@@ -36,9 +38,21 @@ export class LoginComponent {
       response => {
         if (response.message === 'Login successful') {
           this.successMessage = 'Login successful!';
-          const userId = this.authService.getUserId(); // Retrieve user ID
-          console.log('Logged in user ID:', userId); // You can use this ID in other functions
-          this.router.navigate(['/home']);  // Redirect to 'home'
+          const userId = this.authService.getUserId();
+          const userType = this.authService.getUserType();
+          console.log('Logged in user ID:', userId); 
+          if (userType == "user") 
+          {
+            setTimeout(() => {
+              this.router.navigate(['/user-home']);
+            }, 2000);
+          }
+          else if(userType == "courier")
+          {
+            setTimeout(() => {
+              this.router.navigate(['/courier-home']);
+            }, 2000);
+          }
         }
       },
       error => {

@@ -4,8 +4,9 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 interface LoginResponse {
+  userType: string ;
   message: string;
-  userId: number; // Expecting userId in the response
+  userId: number; 
 }
 
 interface RegisterResponse {
@@ -17,6 +18,7 @@ interface RegisterResponse {
 })
 export class AuthService {
   private userId: number | null = null;
+  private userType: string | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -25,8 +27,10 @@ export class AuthService {
     return this.http.post<LoginResponse>('http://localhost:4300/login', credentials).pipe(
       tap(response => {
         if (response.message === 'Login successful') {
-          this.userId = response.userId;  // Store userId in the service
-          localStorage.setItem('userId', String(response.userId));  // Save to localStorage for persistent access
+          this.userId = response.userId; 
+          this.userType = response.userType; 
+          localStorage.setItem('userId', String(response.userId)); 
+          localStorage.setItem('userType', response.userType); 
         }
       })
     );
@@ -45,9 +49,13 @@ export class AuthService {
     return this.userId;
   }
 
+  getUserType(): string | null {
+    return this.userType || localStorage.getItem('userType');
+  }
+
   logout() {
     this.userId = null;
-    localStorage.removeItem('userId');  // Clear userId on logout
+    localStorage.removeItem('userId');  
   }
 
   isLoggedIn(): boolean {
