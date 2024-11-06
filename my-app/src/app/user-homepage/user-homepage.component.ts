@@ -19,7 +19,7 @@ export class UserHomepageComponent {
 
   // Navigate to Order
   goToOrder() {
-    this.router.navigate(['/user-create-order']);
+    this.router.navigate(['/order']);
   }
 
 }
