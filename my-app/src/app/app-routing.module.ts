@@ -21,7 +21,15 @@ const routes: Routes = [
     { path: 'user-order-details', component: UserOrderDetailComponent},
     { path: 'courier-home', component:  CourierHomepageComponent },
     { path: 'courier-order-list', component: CourierOrderListComponent},
-    { path: 'courier-orders', component: CourierOrdersComponent}
+    { path: 'courier-orders', component: CourierOrdersComponent},
+
+
+    { path: 'order-list', component: OrderListComponent },
+    { path: 'user-order-detail/:id', component: UserOrderDetailComponent },
+    { path: '', redirectTo: '/order-list', pathMatch: 'full' },
+
+
+
 
 ];
 

@@ -45,6 +45,11 @@ export class OrderListComponent implements OnInit {
     }
   }
 
+  viewOrderDetails(orderId: number): void {
+    // Redirect to user-order-detail component with the order ID
+    this.router.navigate(['/user-order-detail', orderId]);
+  }
+
   deleteOrder(orderId: number) {
     this.http.delete(`http://localhost:4300/delete-order?order_id=${orderId}`)
       .subscribe(

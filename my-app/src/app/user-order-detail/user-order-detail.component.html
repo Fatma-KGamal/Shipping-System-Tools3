@@ -1,1 +1,22 @@
-<p>user-order-detail works!</p>
+<!-- src/app/user-order-detail/user-order-detail.component.html -->
+<h2>Order Details</h2>
+
+<!-- Display order details if available, else show an error message -->
+<div *ngIf="orderDetails; else errorTemplate">
+  <p><strong>Order ID:</strong> {{ orderDetails.id }}</p>
+  <p><strong>Pickup Location:</strong> {{ orderDetails.pickup_location }}</p>
+  <p><strong>Dropoff Location:</strong> {{ orderDetails.dropoff_location }}</p>
+  <p><strong>Package Details:</strong> {{ orderDetails.package_details }}</p>
+  <p><strong>User ID:</strong> {{ orderDetails.user_id }}</p>
+  <p><strong>Status:</strong> {{ orderDetails.status }}</p>
+  <p><strong>Created At:</strong> {{ orderDetails.created_at }}</p>
+  <p><strong>Updated At:</strong> {{ orderDetails.updated_at }}</p>
+
+  <!-- Button to navigate back to the order list -->
+  <button (click)="goBack()">Back to Orders</button>
+</div>
+
+<!-- Error message template if order details couldn't be loaded -->
+<ng-template #errorTemplate>
+  <p style="color: red;">{{ errorMessage || 'Unable to load order details.' }}</p>
+</ng-template>
