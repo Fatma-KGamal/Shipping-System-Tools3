@@ -821,3 +821,47 @@ func reassignCourier(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
+
+func getAllCouriers(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		db := dbConn()
+		defer db.Close()
+
+		// Query to fetch all orders
+		rows, err := db.Query("SELECT courier_id, name, email, phone FROM `courier`")
+		if err != nil {
+			http.Error(w, "Error fetching couriers", http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var couriers []User
+
+		// Loop through rows and scan each order's data into an Order struct
+		for rows.Next() {
+			var courier User
+
+			err := rows.Scan(
+				&courier.ID, &courier.Username, &courier.Email, &courier.Phone,
+			)
+			if err != nil {
+				http.Error(w, "Error scanning courier data", http.StatusInternalServerError)
+				return
+			}
+
+			couriers = append(couriers, courier)
+		}
+
+		if err := rows.Err(); err != nil {
+			http.Error(w, "Error processing rows", http.StatusInternalServerError)
+			return
+		}
+
+		// Return orders as JSON
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(couriers)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
