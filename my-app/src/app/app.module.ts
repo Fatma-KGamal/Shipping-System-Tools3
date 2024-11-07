@@ -20,6 +20,9 @@ import { FooterComponent } from './footer/footer.component';
 import { MainComponent } from './main/main.component';
 import { CourierNavbarComponent } from './courier-navbar/courier-navbar.component';
 import { UserNavbarComponent } from './user-navbar/user-navbar.component';
+import { AdminOrderDetailComponent } from './admin-order-detail/admin-order-detail.component';
+import { AdminOrderListComponent } from './admin-order-list/admin-order-list.component';
+import { AdminNavbarComponent } from './admin-navbar/admin-navbar.component';
 
 
 
@@ -42,6 +45,9 @@ import { UserNavbarComponent } from './user-navbar/user-navbar.component';
     MainComponent,
     CourierNavbarComponent,
     UserNavbarComponent,
+    AdminOrderDetailComponent,
+    AdminOrderListComponent,
+    AdminNavbarComponent,
     
   ],
   imports: [

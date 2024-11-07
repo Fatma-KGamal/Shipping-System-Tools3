@@ -40,8 +40,8 @@ export class LoginComponent {
           this.successMessage = 'Login successful!';
           const userId = this.authService.getUserId();
           const userType = this.authService.getUserType();
-          console.log('Logged in user ID:', userId); 
-          if (userType == "user") 
+          console.log('Logged in user ID:', userId);
+          if (userType == "user")
           {
             setTimeout(() => {
               this.router.navigate(['/user-home']);
@@ -53,7 +53,7 @@ export class LoginComponent {
               this.router.navigate(['/courier-home']);
             }, 2000);
           }
-          else if(userType == "admin")
+          else
             {
               setTimeout(() => {
                 this.router.navigate(['/admin-home']);

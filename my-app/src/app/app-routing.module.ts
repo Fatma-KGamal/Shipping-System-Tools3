@@ -10,25 +10,28 @@ import { CourierHomepageComponent} from "./courier-homepage/courier-homepage.com
 import { CourierOrderListComponent } from './courier-order-list/courier-order-list.component';
 import { CourierOrdersComponent } from './courier-orders/courier-orders.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
+import { AdminHomepageComponent } from './admin-homepage/admin-homepage.component';
+import { AdminOrderListComponent } from './admin-order-list/admin-order-list.component';
+import { AdminOrderDetailComponent } from './admin-order-detail/admin-order-detail.component';
+
 
 
 const routes: Routes = [
     { path: 'landingpage', component: LandingpageComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
-    { path: '', redirectTo: '/landingpage', pathMatch: 'full' },
     { path: 'user-home', component: UserHomepageComponent },
     { path: 'create-order', component: UserCreateOrderComponent },
     { path: 'user-order-list', component: UserOrderListComponent },
-    { path: 'user-order-details', component: UserOrderDetailComponent},
+    { path: 'user-order-detail/:id', component: UserOrderDetailComponent },
     { path: 'courier-home', component:  CourierHomepageComponent },
     { path: 'courier-order-list', component: CourierOrderListComponent},
     { path: 'courier-orders', component: CourierOrdersComponent},
-    { path: 'user-order-detail/:id', component: UserOrderDetailComponent },
-    { path: '', redirectTo: '/order-list', pathMatch: 'full' },
-
-
-
+    { path: 'admin-home', component: AdminHomepageComponent },
+    { path: 'admin-order-list', component: AdminOrderListComponent },
+    { path: 'admin-order-detail/:id', component: AdminOrderDetailComponent },
+    // { path: '', redirectTo: '/order-list', pathMatch: 'full' },
+    { path: '', redirectTo: '/landingpage', pathMatch: 'full' },
 
 ];
 

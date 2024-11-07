@@ -1,0 +1,25 @@
+<app-admin-navbar></app-admin-navbar>
+<h2>All Orders</h2>
+<table border="1">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let order of orders">
+      <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
+        {{ order.id }}
+      </td>
+      <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
+        {{ order.status }}
+      </td>
+      <td>
+        <button (click)="editOrder(order.id)">Edit</button>
+        <button (click)="deleteOrder(order.id)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

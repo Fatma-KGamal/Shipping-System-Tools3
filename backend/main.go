@@ -70,7 +70,7 @@ func main() {
 	http.HandleFunc("/get-orders", handleCORS(getOrders))
 	http.HandleFunc("/update-order-status-admin", handleCORS(updateOrderStatusAdmin))
 	http.HandleFunc("/delete-order-admin", handleCORS(deleteOrderAdmin))
-	http.HandleFunc("/reassign-courier", handleCORS(reassignCourier))
+	http.HandleFunc("/assign-order", handleCORS(reassignCourier))
 
 	log.Fatal(http.ListenAndServe(":4300", nil))
 }
@@ -208,21 +208,30 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		var storedUser User
 		var tableName string
 
-		// Get user by email from the user table
+		// Check in "users" table first
 		err = db.QueryRow("SELECT id, password FROM users WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
-		// If not found in users, get user by email from the courier table
 		if err == sql.ErrNoRows {
+			// If not found, check in "courier" table
 			err = db.QueryRow("SELECT courier_id AS id, password FROM courier WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
-			// If not found in both tables, return an unauthorized status
 			if err == sql.ErrNoRows {
-				http.Error(w, "User not found", http.StatusUnauthorized)
-				return
+				// If still not found, check in "admin" table
+				err = db.QueryRow("SELECT admin_id AS id, password FROM admin WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
+				if err == sql.ErrNoRows {
+					http.Error(w, "User not found", http.StatusUnauthorized)
+					return
+				} else if err != nil {
+					log.Println("Database query error (admin table):", err)
+					http.Error(w, "Database error", http.StatusInternalServerError)
+					return
+				}
+				tableName = "admin"
 			} else if err != nil {
 				log.Println("Database query error (courier table):", err)
 				http.Error(w, "Database error", http.StatusInternalServerError)
 				return
+			} else {
+				tableName = "courier"
 			}
-			tableName = "courier"
 		} else if err != nil {
 			log.Println("Database query error (user table):", err)
 			http.Error(w, "Database error", http.StatusInternalServerError)

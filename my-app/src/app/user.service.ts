@@ -24,18 +24,18 @@ export class UserService {
   createOrder(orderData: any): Observable<any> {
     return this.http.post('http://localhost:4300/create-order', orderData);
 
-}
+  }
 
-getOrderDetails(orderId: number): Observable<any> {
-  return this.http.get(`http://localhost:4300/get-order-details?order_id=${orderId}`);
-}
+  getOrderDetails(orderId: number): Observable<any> {
+    return this.http.get(`http://localhost:4300/get-order-details?order_id=${orderId}`);
+  }
 
-getUserOrders(userId: number): Observable<Order[]> {
-  return this.http.get<Order[]>(`http://localhost:4300/get-user-orders?user_id=${userId}`);
-}
+  getUserOrders(userId: number): Observable<Order[]> {
+    return this.http.get<Order[]>(`http://localhost:4300/get-user-orders?user_id=${userId}`);
+  }
 
-deleteOrder(orderId: number): Observable<any> {
-  return this.http.delete(`http://localhost:4300/delete-order?order_id=${orderId}`);
-}
+  deleteOrder(orderId: number): Observable<any> {
+    return this.http.delete(`http://localhost:4300/delete-order?order_id=${orderId}`);
+  }
 }
 
