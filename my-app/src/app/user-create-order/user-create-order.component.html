@@ -1,3 +1,5 @@
+<app-user-navbar></app-user-navbar>
+
 <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
     <label for="pickupLocation">Pickup Location:</label>
     <input id="pickupLocation" formControlName="pickupLocation" required>
@@ -15,8 +17,6 @@
     
     <!-- Display error message if there is one -->
     <div *ngIf="errorMessage" style="color: red;">{{ errorMessage }}</div>
-    
-    <!-- Button to redirect to the home page -->
-    <button type="button" (click)="goHome()">Go to Home</button>
+  
   </form>
   

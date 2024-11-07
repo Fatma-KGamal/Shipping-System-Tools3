@@ -53,6 +53,12 @@ export class LoginComponent {
               this.router.navigate(['/courier-home']);
             }, 2000);
           }
+          else if(userType == "admin")
+            {
+              setTimeout(() => {
+                this.router.navigate(['/admin-home']);
+              }, 2000);
+            }
         }
       },
       error => {

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-user-order-detail',
@@ -11,7 +12,7 @@ export class UserOrderDetailComponent implements OnInit {
   orderDetails: any = null;
   errorMessage: string | null = null;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
+  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router,private userService: UserService,) {}
 
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');
@@ -21,19 +22,14 @@ export class UserOrderDetailComponent implements OnInit {
   }
 
   fetchOrderDetails(orderId: number): void {
-    this.http.get(`http://localhost:4300/get-order-details?order_id=${orderId}`)
-      .subscribe(
-        (response) => {
-          this.orderDetails = response;
-        },
-        (error) => {
-          console.error('Error fetching order details', error);
-          this.errorMessage = 'Could not fetch order details. Please try again.';
-        }
-      );
-  }
-
-  goBack(): void {
-    this.router.navigate(['/order-list']);
+    this.userService.getOrderDetails(orderId).subscribe(
+      (response) => {
+        this.orderDetails = response;
+      },
+      (error) => {
+        console.error('Error fetching order details', error);
+        this.errorMessage = 'Could not fetch order details. Please try again.';
+      }
+    );
   }
 }
