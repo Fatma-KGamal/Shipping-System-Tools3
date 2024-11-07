@@ -12,7 +12,7 @@ export class UserOrderDetailComponent implements OnInit {
   orderDetails: any = null;
   errorMessage: string | null = null;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router,private userService: UserService,) {}
+  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router,private userService: UserService) {}
 
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');

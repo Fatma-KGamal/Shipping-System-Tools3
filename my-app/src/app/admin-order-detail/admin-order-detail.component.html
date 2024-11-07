@@ -12,9 +12,19 @@
   <p><strong>Customer ID:</strong> {{ orderDetails.user_id }}</p>
   <p><strong>courier ID:</strong> {{ orderDetails.courier_id }}</p>
 </div>
-<button (click)="assignOrder()">Assign Courier</button>
-<button (click)="updateOrderStatus()">Update Order</button>
 
+<label for="courierSelect">Assign Courier:</label>
+<select id="courierSelect" [(ngModel)]="selectedCourierId">
+  <option *ngFor="let courier of couriers" [value]="courier.id">{{ courier.name }}</option>
+</select>
+<button (click)="assignOrder()">Assign Courier</button>
+
+<!-- Dropdown for updating status -->
+<label for="statusSelect">Update Order Status:</label>
+<select id="statusSelect" [(ngModel)]="selectedStatus">
+  <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+</select>
+<button (click)="updateOrderStatus()">Update Order Status</button>
 
 
 <!-- Error message template if order details couldn't be loaded -->

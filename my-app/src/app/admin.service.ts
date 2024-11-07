@@ -41,5 +41,8 @@ export class AdminService {
   assignOrder(orderId: number, courierId: number): Observable<any> {
     return this.http.put(`http://localhost:4300/assign-order`, { order_id: orderId, courier_id: courierId });
   }
+  getCouriers(): Observable<Array<{ id: number, name: string }>> {
+    return this.http.get<Array<{ id: number, name: string }>>('http://localhost:4300/get-couriers');
+  }
 
 }

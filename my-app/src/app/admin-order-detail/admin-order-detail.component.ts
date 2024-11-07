@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
 import {AdminService} from "../admin.service";
+import {UserService} from "../user.service";
 
 interface Order {
   id: number;
@@ -24,8 +25,12 @@ interface Order {
 export class AdminOrderDetailComponent implements OnInit{
   orderDetails: Order | null = null;
   errorMessage: string | null = null;
+  couriers: Array<{ id: number, name: string }> = [];
+  statuses: string[] = ['Pending','In Progress','Picked Up', 'In Transit', 'Delivered','Cancelled'];
+  selectedCourierId: number = 0;
+  selectedStatus: string = 'Pending';
 
-  constructor(private route:ActivatedRoute, private http: HttpClient, private router: Router, private adminService: AdminService) {}
+  constructor(private route:ActivatedRoute, private http: HttpClient, private router: Router, private adminService: AdminService ,private userService:UserService) {}
 
   fetchOrderDetails(orderId: number): void {
     this.adminService.getOrderDetails(orderId).subscribe(
@@ -38,41 +43,12 @@ export class AdminOrderDetailComponent implements OnInit{
       }
     );
   }
-
-  // assignOrder(orderId: number, courierId: number): void {
-  //   this.adminService.assignOrder(orderId, courierId).subscribe(
-  //     (response) => {
-  //       this.router.navigate(['/admin/orders']);
-  //     },
-  //     (error) => {
-  //       console.error('Error assigning order', error);
-  //       this.errorMessage = 'Could not assign order. Please try again.';
-  //     }
-  //   );
-  // }
-  //
-  // updateOrderStatus(orderId: number, status: string): void {
-  //   this.adminService.updateOrderStatus(orderId, status).subscribe(
-  //     (response) => {
-  //       this.router.navigate(['/admin/orders']);
-  //     },
-  //     (error) => {
-  //       console.error('Error updating order status', error);
-  //       this.errorMessage = 'Could not update order status. Please try again.';
-  //     }
-  //   );
-  // }
-
   assignOrder(): void {
-    if (this.orderDetails && this.orderDetails.id && this.orderDetails.courier_id) {
-      this.adminService.assignOrder(this.orderDetails.id, this.orderDetails.courier_id).subscribe(
-        () => {
-          this.router.navigate(['/admin/orders']);
-        },
-        (error) => {
-          console.error('Error assigning order', error);
-          this.errorMessage = 'Could not assign order. Please try again.';
-        }
+    if (this.orderDetails?.id && this.selectedCourierId) {
+      console.log('Assign Order Button Clicked');
+      this.adminService.assignOrder(this.orderDetails.id, this.selectedCourierId).subscribe(
+        () => this.router.navigate(['/admin-order-list']),
+        (error) => this.errorMessage = 'Could not assign order. Please try again.'
       );
     } else {
       this.errorMessage = 'Order ID or Courier ID is missing';
@@ -80,15 +56,10 @@ export class AdminOrderDetailComponent implements OnInit{
   }
 
   updateOrderStatus(): void {
-    if (this.orderDetails && this.orderDetails.id && this.orderDetails.status) {
-      this.adminService.updateOrderStatus(this.orderDetails.id, this.orderDetails.status).subscribe(
-        () => {
-          this.router.navigate(['/admin/orders']);
-        },
-        (error) => {
-          console.error('Error updating order status', error);
-          this.errorMessage = 'Could not update order status. Please try again.';
-        }
+    if (this.orderDetails?.id && this.selectedStatus) {
+      this.adminService.updateOrderStatus(this.orderDetails.id, this.selectedStatus).subscribe(
+        () => this.router.navigate(['/admin-order-list']),
+        (error) => this.errorMessage = 'Could not update order status. Please try again.'
       );
     } else {
       this.errorMessage = 'Order ID or status is missing';
@@ -96,12 +67,25 @@ export class AdminOrderDetailComponent implements OnInit{
   }
 
 
+
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');
     if (orderId) {
       this.fetchOrderDetails(+orderId);
+      this.fetchCouriers();
     }
   }
+
+  fetchCouriers(): void {
+    this.adminService.getCouriers().subscribe(
+      (response) => this.couriers = response,
+      (error) => console.error('Error fetching couriers', error)
+    );
+  }
+
+
+
+
 
 
 }
