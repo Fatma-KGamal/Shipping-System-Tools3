@@ -31,7 +31,7 @@ export class AdminService {
   }
 
   updateOrderStatus(orderId: number, status: string): Observable<any> {
-    return this.http.put(`http://localhost:4300/update-order-status-admin`, { order_id: orderId, status: status });
+    return this.http.put('http://localhost:4300/update-order-status-admin', { id: orderId, status: status });
   }
 
   deleteOrder(orderId: number): Observable<any> {
@@ -39,11 +39,11 @@ export class AdminService {
   }
 
   assignOrder(orderId: number, courierId: number): Observable<any> {
-    return this.http.put(`http://localhost:4300/assign-order`, { order_id: orderId, courier_id: courierId });
+    return this.http.put(`http://localhost:4300/assign-order`, { id: orderId, courier_id: courierId });
   }
 
-  getCouriers(): Observable<Array<{ id: number, name: string }>> {
-    return this.http.get<Array<{ id: number, name: string }>>('http://localhost:4300/get-couriers');
+  getCouriers(): Observable<Array<{ id: number, username: string }>> {
+    return this.http.get<Array<{ id: number, username: string }>>('http://localhost:4300/get-couriers');
   }
 
 

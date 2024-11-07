@@ -10,12 +10,12 @@
   <p><strong>Created At:</strong> {{ orderDetails.created_at }}</p>
   <p><strong>Updated At:</strong> {{ orderDetails.updated_at }}</p>
   <p><strong>Customer ID:</strong> {{ orderDetails.user_id }}</p>
-  <p><strong>courier ID:</strong> {{ orderDetails.courier_id }}</p>
+  <p><strong>Courier ID:</strong> {{ orderDetails.courier_id }}</p>
 </div>
 
 <label for="courierSelect">Assign Courier:</label>
 <select id="courierSelect" [(ngModel)]="selectedCourierId">
-  <option *ngFor="let courier of couriers" [value]="courier.id">{{ courier.name }}</option>
+  <option *ngFor="let courier of couriers" [value]="courier.id">{{ courier.username }}</option>
 </select>
 <button (click)="assignOrder()">Assign Courier</button>
 

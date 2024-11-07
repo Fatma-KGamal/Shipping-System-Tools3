@@ -535,8 +535,10 @@ func updateOrderStatus(w http.ResponseWriter, r *http.Request) {
 		}
 		defer r.Body.Close()
 
+		println(order.ID)
+		println(order.Status)
 		// Check for required fields
-		if order.ID == 0 || order.Status == "" || order.CourierID == 0 {
+		if order.ID == 0 || order.Status == "" {
 			http.Error(w, "Missing required fields", http.StatusBadRequest)
 			return
 		}
@@ -697,6 +699,8 @@ func updateOrderStatusAdmin(w http.ResponseWriter, r *http.Request) {
 		}
 		defer r.Body.Close()
 
+		println(order.ID)
+		println(order.Status)
 		// Check for required fields
 		if order.ID == 0 || order.Status == "" {
 			http.Error(w, "Missing required fields", http.StatusBadRequest)
@@ -772,9 +776,12 @@ func deleteOrderAdmin(w http.ResponseWriter, r *http.Request) {
 
 func reassignCourier(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPut {
-		var order Order
+		var payload struct {
+			OrderID   int    `json:"id"`
+			CourierID string `json:"courier_id"`
+		}
 
-		err := json.NewDecoder(r.Body).Decode(&order)
+		err := json.NewDecoder(r.Body).Decode(&payload)
 		if err != nil {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
 			return
@@ -782,7 +789,7 @@ func reassignCourier(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
 		// Check for required fields
-		if order.ID == 0 || order.CourierID == 0 {
+		if payload.OrderID == 0 || payload.CourierID == "" {
 			http.Error(w, "Missing required fields", http.StatusBadRequest)
 			return
 		}
@@ -799,7 +806,7 @@ func reassignCourier(w http.ResponseWriter, r *http.Request) {
 		defer updForm.Close()
 
 		// Execute the prepared statement
-		res, err := updForm.Exec(order.CourierID, order.ID)
+		res, err := updForm.Exec(payload.CourierID, payload.OrderID)
 		if err != nil {
 			http.Error(w, "Error updating order status", http.StatusInternalServerError)
 			return
