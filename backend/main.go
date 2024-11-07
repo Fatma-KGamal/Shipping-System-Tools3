@@ -66,6 +66,8 @@ func main() {
 	http.HandleFunc("/get-courier-orders", handleCORS(getCourierOrders))
 	http.HandleFunc("/update-order-status", handleCORS(updateOrderStatus))
 	http.HandleFunc("/decline-order", handleCORS(declineOrder))
+	http.HandleFunc("/accept-order", handleCORS(acceptOrder))
+	http.HandleFunc("/get-accepted-orders", handleCORS(getAcceptedOrders))
 
 	http.HandleFunc("/get-orders", handleCORS(getOrders))
 	http.HandleFunc("/update-order-status-admin", handleCORS(updateOrderStatusAdmin))
@@ -383,7 +385,7 @@ func GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 
 		var order Order
-		err := db.QueryRow("SELECT order_id, pickup_location, dropoff_location, package_details, status ,  created_at, updated_at FROM `orders` WHERE order_id = ?", orderID).Scan(
+		err := db.QueryRow("SELECT order_id, pickup_location, dropoff_location, package_details, status ,  created_at, updated_at, courier_id, user_id FROM `orders` WHERE order_id = ?", orderID).Scan(
 			&order.ID,
 			&order.PickupLocation,
 			&order.DropoffLocation,
@@ -391,6 +393,8 @@ func GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 			&order.Status,
 			&order.CreatedAt,
 			&order.UpdatedAt,
+			&order.CourierID,
+			&order.UserID,
 		)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -625,6 +629,123 @@ func declineOrder(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Order declined successfully"})
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func acceptOrder(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPut {
+		var order Order
+
+		err := json.NewDecoder(r.Body).Decode(&order)
+		if err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+
+		println(order.ID)
+		println(order.Status)
+		// Check for required fields
+		if order.ID == 0 || order.Status == "" {
+			http.Error(w, "Missing required fields", http.StatusBadRequest)
+			return
+		}
+
+		db := dbConn()
+		defer db.Close()
+
+		// Prepare the SQL statement for updating the order status
+		updForm, err := db.Prepare("UPDATE `orders` SET status = 'Accepted' WHERE order_id = ? AND courier_id = ?")
+		if err != nil {
+			http.Error(w, "Error preparing query", http.StatusInternalServerError)
+			return
+		}
+		defer updForm.Close()
+
+		// Execute the prepared statement
+		res, err := updForm.Exec(order.Status, order.ID, order.CourierID)
+		if err != nil {
+			http.Error(w, "Error updating order status", http.StatusInternalServerError)
+			return
+		}
+
+		// Check if the order was found
+		rowsAffected, err := res.RowsAffected()
+		if err != nil {
+			http.Error(w, "Error checking rows affected", http.StatusInternalServerError)
+			return
+		}
+		if rowsAffected == 0 {
+			http.Error(w, "Order not found or unauthorized", http.StatusNotFound)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Order status updated successfully"})
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func getAcceptedOrders(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		courierID := r.URL.Query().Get("courier_id")
+		if courierID == "" {
+			http.Error(w, "Courier ID is required", http.StatusBadRequest)
+			return
+		}
+
+		db := dbConn()
+		defer db.Close()
+
+		// Query to fetch all orders for the specified user
+		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at FROM `orders` WHERE courier_id = ? AND status = 'Accepted'", courierID)
+		if err != nil {
+			http.Error(w, "Error fetching orders", http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var orders []Order
+
+		// Loop through rows and scan each order's data into an Order struct
+		for rows.Next() {
+			var order Order
+			var deliveryTime sql.NullString
+			var courierID sql.NullInt64
+
+			err := rows.Scan(
+				&order.ID, &order.PickupLocation, &order.DropoffLocation,
+				&order.PackageDetails, &deliveryTime, &order.Status,
+				&courierID, &order.CreatedAt, &order.UpdatedAt,
+			)
+			if err != nil {
+				http.Error(w, "Error scanning order data", http.StatusInternalServerError)
+				return
+			}
+
+			// Handle nullable fields
+			if deliveryTime.Valid {
+				order.DeliveryTime = deliveryTime.String
+			}
+			if courierID.Valid {
+				order.CourierID = int(courierID.Int64)
+			}
+
+			orders = append(orders, order)
+		}
+
+		if err := rows.Err(); err != nil {
+			http.Error(w, "Error processing rows", http.StatusInternalServerError)
+			return
+		}
+
+		// Return orders as JSON
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(orders)
 	} else {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}

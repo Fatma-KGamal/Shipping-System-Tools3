@@ -35,6 +35,7 @@ export class AdminOrderDetailComponent implements OnInit{
   fetchOrderDetails(orderId: number): void {
     this.adminService.getOrderDetails(orderId).subscribe(
       (response) => {
+        console.log('Fetched Order Details:', response);
         this.orderDetails = response;
         console.log('Order Details:', this.orderDetails);
       },
