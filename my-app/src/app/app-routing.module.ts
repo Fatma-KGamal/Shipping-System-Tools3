@@ -30,7 +30,6 @@ const routes: Routes = [
     { path: 'admin-home', component: AdminHomepageComponent },
     { path: 'admin-order-list', component: AdminOrderListComponent },
     { path: 'admin-order-detail/:id', component: AdminOrderDetailComponent },
-    // { path: '', redirectTo: '/order-list', pathMatch: 'full' },
     { path: '', redirectTo: '/landingpage', pathMatch: 'full' },
 
 ];

@@ -71,6 +71,7 @@ func main() {
 	http.HandleFunc("/update-order-status-admin", handleCORS(updateOrderStatusAdmin))
 	http.HandleFunc("/delete-order-admin", handleCORS(deleteOrderAdmin))
 	http.HandleFunc("/assign-order", handleCORS(reassignCourier))
+	http.HandleFunc("/get-couriers", handleCORS(getAllCouriers))
 
 	log.Fatal(http.ListenAndServe(":4300", nil))
 }

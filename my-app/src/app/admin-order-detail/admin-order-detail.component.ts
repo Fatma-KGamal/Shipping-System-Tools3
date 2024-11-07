@@ -47,8 +47,14 @@ export class AdminOrderDetailComponent implements OnInit{
     if (this.orderDetails?.id && this.selectedCourierId) {
       console.log('Assign Order Button Clicked');
       this.adminService.assignOrder(this.orderDetails.id, this.selectedCourierId).subscribe(
-        () => this.router.navigate(['/admin-order-list']),
-        (error) => this.errorMessage = 'Could not assign order. Please try again.'
+        () => {
+          this.router.navigate(['/admin-order-list']);
+          alert("Courier reassigned successfully");
+        },
+        (error) => {
+          this.errorMessage = 'Could not assign order. Please try again.';
+          console.error('Assign Order Error:', error);
+        }
       );
     } else {
       this.errorMessage = 'Order ID or Courier ID is missing';
@@ -58,14 +64,19 @@ export class AdminOrderDetailComponent implements OnInit{
   updateOrderStatus(): void {
     if (this.orderDetails?.id && this.selectedStatus) {
       this.adminService.updateOrderStatus(this.orderDetails.id, this.selectedStatus).subscribe(
-        () => this.router.navigate(['/admin-order-list']),
-        (error) => this.errorMessage = 'Could not update order status. Please try again.'
+        () => {
+          this.router.navigate(['/admin-order-list']);
+          alert("Order status updated successfully");
+        },
+        (error) => {
+          this.errorMessage = 'Could not update order status. Please try again.';
+          console.error('Update Status Error:', error);
+        }
       );
     } else {
-      this.errorMessage = 'Order ID or status is missing';
+      this.errorMessage = 'Order ID or Status is missing';
     }
   }
-
 
 
   ngOnInit(): void {
