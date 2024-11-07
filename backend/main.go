@@ -215,7 +215,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			err = db.QueryRow("SELECT courier_id AS id, password FROM courier WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
 			if err == sql.ErrNoRows {
 				// If still not found, check in "admin" table
-				err = db.QueryRow("SELECT admin_id AS id, password FROM admin WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
+				err = db.QueryRow("SELECT id AS id, password FROM admin WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
 				if err == sql.ErrNoRows {
 					http.Error(w, "User not found", http.StatusUnauthorized)
 					return
