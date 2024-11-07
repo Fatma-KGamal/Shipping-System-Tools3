@@ -52,4 +52,7 @@ CREATE TABLE `orders` (
   CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`courier_id`) REFERENCES `courier` (`courier_id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
+ALTER TABLE tools.`orders` AUTO_INCREMENT = 1;
 
+// it need to be table empty for truncate
+TRUNCATE TABLE tools.`orders`;
