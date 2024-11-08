@@ -23,16 +23,16 @@ export class CourierService {
 
   constructor(private http:HttpClient) { }
 
-  getAssignedOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>('http://localhost:4300/get-courier-orders');
+  getAssignedOrders(courier_id: number): Observable<Order[]> {
+    return this.http.get<Order[]>(`http://localhost:4300/get-courier-orders?courier_id=${courier_id}`);
   }
 
-  getAcceptedOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>('http://localhost:4300/get-accepted-orders');
+  getAcceptedOrders(courier_id: number): Observable<Order[]> {
+    return this.http.get<Order[]>(`http://localhost:4300/get-accepted-orders?courier_id=${courier_id}`);
   }
 
-  getOrderDetails(orderId: number) :Observable<any> {
-    return this.http.get(`http://localhost:4300/get-order-details?order_id=${orderId}`);
+  getOrderDetails(orderId: number): Observable<Order> {
+    return this.http.get<Order>(`http://localhost:4300/get-order-details?order_id=${orderId}`);
   }
 
   acceptOrder(orderId: number): Observable<any> {
@@ -40,7 +40,11 @@ export class CourierService {
   }
 
   declineOrder(orderId: number): Observable<any> {
-    return this.http.put('http://localhost:4300/decline-order', { id: orderId });
+    return this.http.put(`http://localhost:4300/decline-order?order_id=${orderId}`, {});
+  }
+
+  updateOrderStatus(orderId: number, status: string): Observable<any> {
+    return this.http.put('http://localhost:4300/update-order-status', { id: orderId, status });
   }
 
 }

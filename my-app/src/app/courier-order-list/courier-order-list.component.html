@@ -5,7 +5,7 @@
   <tr>
     <th>ID</th>
     <th>Status</th>
-    <th>Actions</th>
+    <th *ngIf="showActions">Actions</th>
   </tr>
   </thead>
   <tbody>
@@ -16,7 +16,7 @@
     <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
       {{ order.status }}
     </td>
-    <td>
+    <td *ngIf="showActions">
       <button (click)="acceptOrder(order.id)">Accept</button>
       <button (click)="declineOrder(order.id)">Decline</button>
     </td>

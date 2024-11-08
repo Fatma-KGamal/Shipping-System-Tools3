@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../auth.service'; 
-import { Router } from '@angular/router'; 
+import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
 import { UserService } from '../user.service';
 
 
@@ -23,12 +22,12 @@ interface Order {
   styleUrls: ['./user-order-list.component.css']
 })
 export class UserOrderListComponent implements OnInit{
-  orders: Order[] = []; 
+  orders: Order[] = [];
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router,private userService: UserService) {} // Inject AuthService and Router
+  constructor( private authService: AuthService, private router: Router,private userService: UserService) {} // Inject AuthService and Router
 
   ngOnInit() {
-    this.getUserOrders(); 
+    this.getUserOrders();
   }
 
   getUserOrders() {

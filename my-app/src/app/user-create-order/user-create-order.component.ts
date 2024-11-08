@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../auth.service'; 
+import { AuthService } from '../auth.service';
 import { UserService } from '../user.service';
-import { Router } from '@angular/router'; 
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-create-order',
@@ -13,10 +12,10 @@ import { Router } from '@angular/router';
 export class UserCreateOrderComponent {
 
   orderForm: FormGroup;
-  errorMessage: string | null = null; 
+  errorMessage: string | null = null;
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService, private router: Router ,private userService: UserService,) { 
-    
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router ,private userService: UserService,) {
+
     const defaultDeliveryTime = this.getDefaultDeliveryTime();
 
     this.orderForm = this.fb.group({
@@ -24,11 +23,11 @@ export class UserCreateOrderComponent {
       dropoffLocation: ['', Validators.required],
       packageDetails: ['', Validators.required],
       deliveryTime: [defaultDeliveryTime],
-      userId: [this.authService.getUserId(), Validators.required], 
+      userId: [this.authService.getUserId(), Validators.required],
     });
   }
 
-  
+
   private getDefaultDeliveryTime(): string {
     const date = new Date();
     date.setHours(date.getHours() + 24); // Add 24 hours
@@ -41,11 +40,11 @@ export class UserCreateOrderComponent {
         pickup_location: this.orderForm.value.pickupLocation,
         dropoff_location: this.orderForm.value.dropoffLocation,
         package_details: this.orderForm.value.packageDetails,
-        delivery_time: this.orderForm.value.deliveryTime || null, 
+        delivery_time: this.orderForm.value.deliveryTime || null,
         user_id: this.orderForm.value.userId,
       };
 
-      console.log('Form Data:', payload); 
+      console.log('Form Data:', payload);
 
       this.userService.createOrder(payload).subscribe(
         response => {

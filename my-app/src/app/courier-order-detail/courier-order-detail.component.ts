@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {HttpClient} from "@angular/common/http";
 import {CourierService} from "../courier.service";
 
 @Component({
@@ -12,7 +11,7 @@ export class CourierOrderDetailComponent implements OnInit{
 
   orderDetails: any = null;
   errorMessage: string | null = null;
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router,private courierService:CourierService) { }
+  constructor(private route: ActivatedRoute,private router: Router,private courierService:CourierService) { }
 
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');

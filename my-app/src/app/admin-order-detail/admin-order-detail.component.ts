@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {HttpClient} from "@angular/common/http";
 import {AdminService} from "../admin.service";
-import {UserService} from "../user.service";
 
 interface Order {
   id: number;
@@ -30,7 +28,7 @@ export class AdminOrderDetailComponent implements OnInit{
   selectedCourierId: number = 0;
   selectedStatus: string = 'Pending';
 
-  constructor(private route:ActivatedRoute, private http: HttpClient, private router: Router, private adminService: AdminService ,private userService:UserService) {}
+  constructor(private route:ActivatedRoute, private router: Router, private adminService: AdminService) {}
 
   fetchOrderDetails(orderId: number): void {
     this.adminService.getOrderDetails(orderId).subscribe(
@@ -98,10 +96,5 @@ export class AdminOrderDetailComponent implements OnInit{
       (error) => console.error('Error fetching couriers', error)
     );
   }
-
-
-
-
-
 
 }

@@ -596,8 +596,7 @@ func updateOrderStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func declineOrder(w http.ResponseWriter, r *http.Request) {
-	//	delete the courier id from the order if it is declined
-	if r.Method == http.MethodDelete {
+	if r.Method == http.MethodPut {
 		orderIDStr := r.URL.Query().Get("order_id")
 		if orderIDStr == "" {
 			http.Error(w, "Order ID is required", http.StatusBadRequest)
@@ -645,6 +644,58 @@ func declineOrder(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
+
+//func declineOrder(w http.ResponseWriter, r *http.Request) {
+//	if r.Method == http.MethodPut {
+//		var requestData struct {
+//			OrderID int `json:"id"`
+//		}
+//
+//		// Decode JSON request body
+//		err := json.NewDecoder(r.Body).Decode(&requestData)
+//		if err != nil {
+//			http.Error(w, "Invalid request body", http.StatusBadRequest)
+//			return
+//		}
+//
+//		orderID := requestData.OrderID
+//		if orderID == 0 {
+//			http.Error(w, "Order ID is required", http.StatusBadRequest)
+//			return
+//		}
+//
+//		db := dbConn()
+//		defer db.Close()
+//
+//		updForm, err := db.Prepare("UPDATE `orders` SET courier_id = NULL WHERE order_id = ?")
+//		if err != nil {
+//			http.Error(w, "Error preparing query", http.StatusInternalServerError)
+//			return
+//		}
+//		defer updForm.Close()
+//
+//		res, err := updForm.Exec(orderID)
+//		if err != nil {
+//			http.Error(w, "Error updating order status", http.StatusInternalServerError)
+//			return
+//		}
+//
+//		rowsAffected, err := res.RowsAffected()
+//		if err != nil {
+//			http.Error(w, "Error checking rows affected", http.StatusInternalServerError)
+//			return
+//		}
+//		if rowsAffected == 0 {
+//			http.Error(w, "Order not found", http.StatusNotFound)
+//			return
+//		}
+//
+//		w.WriteHeader(http.StatusOK)
+//		json.NewEncoder(w).Encode(map[string]string{"message": "Order declined successfully"})
+//	} else {
+//		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+//	}
+//}
 
 func acceptOrder(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPut {

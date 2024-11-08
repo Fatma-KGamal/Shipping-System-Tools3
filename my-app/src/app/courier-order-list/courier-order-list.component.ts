@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {AuthService} from "../auth.service";
 import {Router} from "@angular/router";
 import {CourierService} from "../courier.service";
+import { AuthService } from "../auth.service";
 
 
 interface Order {
@@ -26,20 +25,24 @@ interface Order {
 })
 export class CourierOrderListComponent implements OnInit{
   orders: Order[] = [];
+  courier_id: number=0;
+  showActions = true;
 
-  constructor(private http:HttpClient, private authService: AuthService, private courierService: CourierService, private router: Router) {}
+  constructor( private courierService: CourierService, private router: Router,private authService: AuthService ) {}
 
   ngOnInit() {
+    const userId = this.authService.getUserId();
+    this.courier_id = userId !== null ? userId : 0;
     this.getAssignedOrders();
   }
 
   getAssignedOrders() {
-    this.courierService.getAssignedOrders().subscribe(
+    this.courierService.getAssignedOrders(this.courier_id).subscribe(
       (data: Order[]) => {
         this.orders = data;
       },
       error => {
-        console.error('Error fetching orders', error);
+        console.error('Error fetching assigned orders', error);
       }
     );
   }
@@ -50,9 +53,9 @@ export class CourierOrderListComponent implements OnInit{
 
   acceptOrder(orderId: number) {
     this.courierService.acceptOrder(orderId).subscribe(
-      response=> {
-        console.log('Order Accepted Successfully',response);
-        this.orders = this.orders.filter((order) => order.id !== orderId);
+      response => {
+        console.log('Order Accepted Successfully', response);
+        this.getAssignedOrders();
       },
       error => {
         console.error('Error accepting order', error);
@@ -62,9 +65,9 @@ export class CourierOrderListComponent implements OnInit{
 
   declineOrder(orderId: number) {
     this.courierService.declineOrder(orderId).subscribe(
-      response=> {
-        console.log('Order Declined Successfully',response);
-        this.orders = this.orders.filter((order) => order.id !== orderId);
+      response => {
+        console.log('Order Declined Successfully', response);
+        this.getAssignedOrders();
       },
       error => {
         console.error('Error declining order', error);

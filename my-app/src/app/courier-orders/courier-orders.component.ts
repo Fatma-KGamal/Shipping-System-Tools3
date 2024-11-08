@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {AuthService} from "../auth.service";
 import {CourierService} from "../courier.service";
 import {Router} from "@angular/router";
+import {AuthService} from "../auth.service";
 
 interface Order {
   id: number;
@@ -25,20 +24,24 @@ interface Order {
 export class CourierOrdersComponent implements OnInit{
 
   orders: Order[] = [];
+  showActions = false;
+  courier_id: number=0;
 
-  constructor(private http:HttpClient, private authService: AuthService, private courierService: CourierService, private router: Router) { }
+  constructor( private authService: AuthService,private courierService: CourierService, private router: Router) { }
 
   ngOnInit(): void {
+    const userId = this.authService.getUserId();
+    this.courier_id = userId !== null ? userId : 0;
     this.getAcceptedOrders();
   }
 
   getAcceptedOrders() {
-    this.courierService.getAcceptedOrders().subscribe(
+    this.courierService.getAcceptedOrders(this.courier_id).subscribe(
       (data: Order[]) => {
         this.orders = data;
       },
       error => {
-        console.error('Error fetching orders', error);
+        console.error('Error fetching accepted orders', error);
       }
     );
   }
