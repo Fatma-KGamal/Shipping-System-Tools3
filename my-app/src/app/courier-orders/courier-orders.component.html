@@ -1,2 +1,22 @@
 <app-courier-navbar></app-courier-navbar>
-<p>courier-orders works!</p>
+<h2>All Accepted Orders</h2>
+
+<table border="1">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Status</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let order of orders">
+    <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
+      {{ order.id }}
+    </td>
+    <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
+      {{ order.status }}
+    </td>
+  </tr>
+  </tbody>
+</table>

@@ -1,0 +1,18 @@
+<app-courier-navbar></app-courier-navbar>
+<h2>Order Details</h2>
+
+<div *ngIf="orderDetails; else errorTemplate">
+  <p><strong>Order ID:</strong> {{ orderDetails.id }}</p>
+  <p><strong>Pickup Location:</strong> {{ orderDetails.pickup_location }}</p>
+  <p><strong>Dropoff Location:</strong> {{ orderDetails.dropoff_location }}</p>
+  <p><strong>Package Details:</strong> {{ orderDetails.package_details }}</p>
+  <p><strong>Status:</strong> {{ orderDetails.status }}</p>
+  <p><strong>Created At:</strong> {{ orderDetails.created_at }}</p>
+  <p><strong>Updated At:</strong> {{ orderDetails.updated_at }}</p>
+
+</div>
+
+<!-- Error message template if order details couldn't be loaded -->
+<ng-template #errorTemplate>
+  <p style="color: red;">{{ errorMessage || 'Unable to load order details.' }}</p>
+</ng-template>

@@ -26,7 +26,7 @@ export class AdminOrderDetailComponent implements OnInit{
   orderDetails: Order | null = null;
   errorMessage: string | null = null;
   couriers: Array<{ id: number, username: string }> = [];
-  statuses: string[] = ['Pending','In Progress','Picked Up', 'In Transit', 'Delivered','Cancelled'];
+  statuses: string[] = ['Pending','In Progress','Picked Up','In Transit', 'Delivered','Cancelled'];
   selectedCourierId: number = 0;
   selectedStatus: string = 'Pending';
 
@@ -37,7 +37,6 @@ export class AdminOrderDetailComponent implements OnInit{
       (response) => {
         console.log('Fetched Order Details:', response);
         this.orderDetails = response;
-        console.log('Order Details:', this.orderDetails);
       },
       (error) => {
         console.error('Error fetching order details', error);
@@ -48,12 +47,10 @@ export class AdminOrderDetailComponent implements OnInit{
 
   assignOrder(): void {
     if (this.orderDetails?.id && this.selectedCourierId) {
-      console.log('Assign Order Button Clicked');
-      // Send the order ID and courier ID separately in the request
       this.adminService.assignOrder(this.orderDetails.id, this.selectedCourierId).subscribe(
         () => {
-          this.router.navigate(['/admin-order-list']);
-          alert("Courier reassigned successfully");
+          this.router.navigate(['/admin-order-detail']);
+          alert("Courier assigned successfully");
         },
         (error) => {
           this.errorMessage = 'Could not assign order. Please try again.';
@@ -69,7 +66,8 @@ export class AdminOrderDetailComponent implements OnInit{
     if (this.orderDetails?.id && this.selectedStatus) {
       this.adminService.updateOrderStatus(this.orderDetails.id, this.selectedStatus).subscribe(
         () => {
-          // Handle success
+          this.router.navigate(['/admin-order-detail']);
+          alert("Order status updated successfully");
         },
         (error) => {
           console.error('Update Status Error:', error);
@@ -87,7 +85,7 @@ export class AdminOrderDetailComponent implements OnInit{
     const orderId = this.route.snapshot.paramMap.get('id');
     if (orderId) {
       this.fetchOrderDetails(+orderId);
-      this.fetchCouriers(); // Ensure this method is called to populate couriers
+      this.fetchCouriers();
     }
   }
 
