@@ -384,6 +384,7 @@ func GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 		db := dbConn()
 		defer db.Close()
 
+		var courier_id *int
 		var order Order
 		err := db.QueryRow("SELECT order_id, pickup_location, dropoff_location, package_details, status ,  created_at, updated_at, courier_id, user_id FROM `orders` WHERE order_id = ?", orderID).Scan(
 			&order.ID,
@@ -393,9 +394,14 @@ func GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 			&order.Status,
 			&order.CreatedAt,
 			&order.UpdatedAt,
-			&order.CourierID,
+			&courier_id,
 			&order.UserID,
 		)
+		if courier_id != nil {
+			order.CourierID = *courier_id
+		} else {
+			order.CourierID = 0
+		}
 		if err != nil {
 			if err == sql.ErrNoRows {
 				http.Error(w, "Order not found", http.StatusNotFound)
@@ -477,7 +483,7 @@ func getCourierOrders(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 
 		// Query to fetch all orders for the specified user
-		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at FROM `orders` WHERE courier_id = ?", courierID)
+		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at, user_id FROM `orders` WHERE courier_id = ?", courierID)
 		if err != nil {
 			http.Error(w, "Error fetching orders", http.StatusInternalServerError)
 			return
@@ -490,14 +496,15 @@ func getCourierOrders(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var order Order
 			var deliveryTime sql.NullString
-			var courierID sql.NullInt64
+			var courierID *int
 
 			err := rows.Scan(
 				&order.ID, &order.PickupLocation, &order.DropoffLocation,
 				&order.PackageDetails, &deliveryTime, &order.Status,
-				&courierID, &order.CreatedAt, &order.UpdatedAt,
+				&courierID, &order.CreatedAt, &order.UpdatedAt, &order.UserID,
 			)
 			if err != nil {
+				println(err.Error())
 				http.Error(w, "Error scanning order data", http.StatusInternalServerError)
 				return
 			}
@@ -506,8 +513,13 @@ func getCourierOrders(w http.ResponseWriter, r *http.Request) {
 			if deliveryTime.Valid {
 				order.DeliveryTime = deliveryTime.String
 			}
-			if courierID.Valid {
-				order.CourierID = int(courierID.Int64)
+			//if courierID !=  {
+			//	order.CourierID = int(courierID)
+			//}
+			if courierID != nil {
+				order.CourierID = *courierID
+			} else {
+				order.CourierID = 0
 			}
 
 			orders = append(orders, order)
