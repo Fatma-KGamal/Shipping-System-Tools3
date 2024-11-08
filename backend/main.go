@@ -645,82 +645,37 @@ func declineOrder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//func declineOrder(w http.ResponseWriter, r *http.Request) {
-//	if r.Method == http.MethodPut {
-//		var requestData struct {
-//			OrderID int `json:"id"`
-//		}
-//
-//		// Decode JSON request body
-//		err := json.NewDecoder(r.Body).Decode(&requestData)
-//		if err != nil {
-//			http.Error(w, "Invalid request body", http.StatusBadRequest)
-//			return
-//		}
-//
-//		orderID := requestData.OrderID
-//		if orderID == 0 {
-//			http.Error(w, "Order ID is required", http.StatusBadRequest)
-//			return
-//		}
-//
-//		db := dbConn()
-//		defer db.Close()
-//
-//		updForm, err := db.Prepare("UPDATE `orders` SET courier_id = NULL WHERE order_id = ?")
-//		if err != nil {
-//			http.Error(w, "Error preparing query", http.StatusInternalServerError)
-//			return
-//		}
-//		defer updForm.Close()
-//
-//		res, err := updForm.Exec(orderID)
-//		if err != nil {
-//			http.Error(w, "Error updating order status", http.StatusInternalServerError)
-//			return
-//		}
-//
-//		rowsAffected, err := res.RowsAffected()
-//		if err != nil {
-//			http.Error(w, "Error checking rows affected", http.StatusInternalServerError)
-//			return
-//		}
-//		if rowsAffected == 0 {
-//			http.Error(w, "Order not found", http.StatusNotFound)
-//			return
-//		}
-//
-//		w.WriteHeader(http.StatusOK)
-//		json.NewEncoder(w).Encode(map[string]string{"message": "Order declined successfully"})
-//	} else {
-//		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-//	}
-//}
-
 func acceptOrder(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPut {
 		var order Order
-
-		err := json.NewDecoder(r.Body).Decode(&order)
+		orderID, err := strconv.Atoi(r.URL.Query().Get("order_id"))
 		if err != nil {
-			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			http.Error(w, "Invalid order ID", http.StatusBadRequest)
 			return
 		}
-		defer r.Body.Close()
-
+		order.ID = orderID
 		println(order.ID)
 		println(order.Status)
 		// Check for required fields
-		if order.ID == 0 || order.Status == "" {
+		if order.ID == 0 {
 			http.Error(w, "Missing required fields", http.StatusBadRequest)
 			return
 		}
 
 		db := dbConn()
-		defer db.Close()
+		// check whether the order exists
+		err = db.QueryRow("SELECT order_id, status FROM `orders` WHERE order_id = ?", orderID).Scan(&order.ID, &order.Status)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				http.Error(w, "Order not found or unauthorized", http.StatusNotFound)
+				return
+			}
+			http.Error(w, "Error fetching order details", http.StatusInternalServerError)
+			return
+		}
 
 		// Prepare the SQL statement for updating the order status
-		updForm, err := db.Prepare("UPDATE `orders` SET status = 'Accepted' WHERE order_id = ? AND courier_id = ?")
+		updForm, err := db.Prepare("UPDATE `orders` SET status = 'Accepted' WHERE order_id = ?")
 		if err != nil {
 			http.Error(w, "Error preparing query", http.StatusInternalServerError)
 			return
@@ -728,8 +683,9 @@ func acceptOrder(w http.ResponseWriter, r *http.Request) {
 		defer updForm.Close()
 
 		// Execute the prepared statement
-		res, err := updForm.Exec(order.Status, order.ID, order.CourierID)
+		res, err := updForm.Exec(order.ID)
 		if err != nil {
+			println(err.Error())
 			http.Error(w, "Error updating order status", http.StatusInternalServerError)
 			return
 		}
@@ -764,7 +720,7 @@ func getAcceptedOrders(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 
 		// Query to fetch all orders for the specified user
-		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at FROM `orders` WHERE courier_id = ? AND status = 'Accepted'", courierID)
+		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at, user_id FROM `orders` WHERE courier_id = ? AND status = 'Accepted'", courierID)
 		if err != nil {
 			http.Error(w, "Error fetching orders", http.StatusInternalServerError)
 			return
@@ -782,7 +738,7 @@ func getAcceptedOrders(w http.ResponseWriter, r *http.Request) {
 			err := rows.Scan(
 				&order.ID, &order.PickupLocation, &order.DropoffLocation,
 				&order.PackageDetails, &deliveryTime, &order.Status,
-				&courierID, &order.CreatedAt, &order.UpdatedAt,
+				&courierID, &order.CreatedAt, &order.UpdatedAt, &order.UserID,
 			)
 			if err != nil {
 				http.Error(w, "Error scanning order data", http.StatusInternalServerError)
