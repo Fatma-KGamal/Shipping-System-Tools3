@@ -1,4 +1,3 @@
-// src/app/app.module.ts
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
@@ -16,7 +15,6 @@ import { UserHomepageComponent } from './user-homepage/user-homepage.component';
 import { UserOrderDetailComponent } from './user-order-detail/user-order-detail.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
 import { AdminHomepageComponent } from './admin-homepage/admin-homepage.component';
-import { FooterComponent } from './footer/footer.component';
 import { MainComponent } from './main/main.component';
 import { CourierNavbarComponent } from './courier-navbar/courier-navbar.component';
 import { UserNavbarComponent } from './user-navbar/user-navbar.component';
@@ -42,7 +40,6 @@ import { CourierOrderDetailComponent } from './courier-order-detail/courier-orde
     CourierHomepageComponent,
     AdminHomepageComponent,
     UserOrderListComponent,
-    FooterComponent,
     MainComponent,
     CourierNavbarComponent,
     UserNavbarComponent,
@@ -50,12 +47,12 @@ import { CourierOrderDetailComponent } from './courier-order-detail/courier-orde
     AdminOrderListComponent,
     AdminNavbarComponent,
     CourierOrderDetailComponent,
-    
+
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    ReactiveFormsModule, 
+    ReactiveFormsModule,
     FormsModule,
     AppRoutingModule
   ],

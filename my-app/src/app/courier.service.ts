@@ -38,9 +38,6 @@ export class CourierService {
   acceptOrder(orderId: number): Observable<any> {
     return this.http.put(`http://localhost:4300/accept-order?order_id=${orderId}`, {});
   }
-  // acceptOrder(orderId: number): Observable<any> {
-  //   return this.http.put(`http://localhost:4300/accept-order`, { id: orderId });
-  // }
 
   declineOrder(orderId: number): Observable<any> {
     return this.http.put(`http://localhost:4300/decline-order?order_id=${orderId}`, {});

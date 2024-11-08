@@ -212,13 +212,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		var tableName string
 
 		// Check in "users" table first
-		err = db.QueryRow("SELECT id, password FROM users WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
+		err = db.QueryRow("SELECT id,username, password FROM users WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Username, &storedUser.Password)
 		if err == sql.ErrNoRows {
 			// If not found, check in "courier" table
-			err = db.QueryRow("SELECT courier_id AS id, password FROM courier WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
+			err = db.QueryRow("SELECT courier_id AS id,name,password FROM courier WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Username, &storedUser.Password)
 			if err == sql.ErrNoRows {
 				// If still not found, check in "admin" table
-				err = db.QueryRow("SELECT id AS id, password FROM admin WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Password)
+				err = db.QueryRow("SELECT id AS id,username, password FROM admin WHERE email=?", email).Scan(&storedUser.ID, &storedUser.Username, &storedUser.Password)
 				if err == sql.ErrNoRows {
 					http.Error(w, "User not found", http.StatusUnauthorized)
 					return
@@ -256,6 +256,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			"message":  "Login successful",
 			"userId":   storedUser.ID,
 			"userType": tableName,
+			"username": storedUser.Username,
 		})
 	} else {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

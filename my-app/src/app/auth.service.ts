@@ -6,7 +6,8 @@ import { tap } from 'rxjs/operators';
 interface LoginResponse {
   userType: string ;
   message: string;
-  userId: number; 
+  userId: number;
+  username: string;
 }
 
 interface RegisterResponse {
@@ -19,6 +20,7 @@ interface RegisterResponse {
 export class AuthService {
   private userId: number | null = null;
   private userType: string | null = null;
+  private username: string | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -27,10 +29,12 @@ export class AuthService {
     return this.http.post<LoginResponse>('http://localhost:4300/login', credentials).pipe(
       tap(response => {
         if (response.message === 'Login successful') {
-          this.userId = response.userId; 
-          this.userType = response.userType; 
-          localStorage.setItem('userId', String(response.userId)); 
-          localStorage.setItem('userType', response.userType); 
+          this.userId = response.userId;
+          this.userType = response.userType;
+          this.username = response.username;
+          localStorage.setItem('userId', String(response.userId));
+          localStorage.setItem('userType', response.userType);
+          localStorage.setItem('username', response.username);
         }
       })
     );
@@ -49,16 +53,17 @@ export class AuthService {
     return this.userId;
   }
 
+  getUsername(): string | null {
+    return this.username || localStorage.getItem('username');
+  }
+
   getUserType(): string | null {
     return this.userType || localStorage.getItem('userType');
   }
 
   logout() {
     this.userId = null;
-    localStorage.removeItem('userId');  
+    localStorage.removeItem('userId');
   }
 
-  isLoggedIn(): boolean {
-    return this.getUserId() !== null;
-  }
 }
