@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"strconv"
 	"text/template"
-	"time"
 )
 
 // User struct holds user data
@@ -285,16 +284,6 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 		db := dbConn()
 		defer db.Close()
-
-		// Parse DeliveryTime if it is not empty
-		if order.DeliveryTime != "" {
-			parsedTime, err := time.Parse(time.RFC3339, order.DeliveryTime)
-			if err != nil {
-				http.Error(w, "Invalid delivery time format", http.StatusBadRequest)
-				return
-			}
-			order.DeliveryTime = parsedTime.Format("2006-01-02 15:04:05") // MySQL datetime format
-		}
 
 		// insert new order query
 		insForm, err := db.Prepare("INSERT INTO `orders` (pickup_location, dropoff_location, package_details, delivery_time, user_id, status) VALUES (?, ?, ?, ?, ?, ?)")
