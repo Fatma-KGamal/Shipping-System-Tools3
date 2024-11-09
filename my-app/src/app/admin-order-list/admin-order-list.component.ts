@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { AdminService } from '../admin.service';
-import { Router } from '@angular/router';
+import {HttpClient} from '@angular/common/http';
+import {Component, OnInit} from '@angular/core';
+import {AuthService} from '../auth.service';
+import {AdminService} from '../admin.service';
+import {Router} from '@angular/router';
 
 interface Order {
   id: number;
@@ -24,8 +24,11 @@ interface Order {
 })
 export class AdminOrderListComponent implements OnInit {
   orders: Order[] = [];
+  errorMessage: string = '';
+  successMessage: string = '';
 
-  constructor(private http:HttpClient, private authService: AuthService, private adminService: AdminService, private router: Router) {}
+  constructor(private http: HttpClient, private authService: AuthService, private adminService: AdminService, private router: Router) {
+  }
 
   ngOnInit() {
     this.getOrders();
@@ -53,18 +56,20 @@ export class AdminOrderListComponent implements OnInit {
 
   deleteOrder(orderId: number) {
     this.adminService.deleteOrder(orderId).subscribe(
-      response=> {
-        console.log('Order Deleted Successfully',response);
+      response => {
+        console.log('Order Deleted Successfully', response);
         this.orders = this.orders.filter((order) => order.id !== orderId);
+        this.successMessage = 'Order deleted Successfully';
       },
       error => {
         console.log('Error deleting order', error);
+        this.errorMessage = 'Error deleting order';
       });
 
   }
 
   editOrder(orderId: number) {
-    this.router.navigate(['/admin-order-edit', orderId]);
+    this.router.navigate(['/admin-order-detail', orderId]);
   }
 
   logout() {

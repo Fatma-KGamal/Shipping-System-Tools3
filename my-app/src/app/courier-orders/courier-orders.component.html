@@ -1,7 +1,8 @@
 <app-courier-navbar></app-courier-navbar>
-<h2>All Accepted Orders</h2>
 
-<table border="1">
+<div class="container">
+<h1>All Accepted Orders</h1>
+<table>
   <thead>
   <tr>
     <th>ID</th>
@@ -11,12 +12,10 @@
   </thead>
   <tbody>
   <tr *ngFor="let order of orders">
-    <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
-      {{ order.id }}
-    </td>
-    <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
-      {{ order.status }}
-    </td>
+    <td (click)="viewOrderDetails(order.id)" >{{ order.id }}</td>
+    <td (click)="viewOrderDetails(order.id)" >{{ order.status }}</td>
+    <td><button (click)="updateOrderStatus(order.id,order.status)" class="edit-button">Update Order Status</button></td>
   </tr>
   </tbody>
 </table>
+</div>

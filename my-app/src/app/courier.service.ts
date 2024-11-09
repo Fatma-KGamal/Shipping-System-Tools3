@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
 
 interface Order {
   id: number;
@@ -21,7 +21,8 @@ interface Order {
 
 export class CourierService {
 
-  constructor(private http:HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   getAssignedOrders(courier_id: number): Observable<Order[]> {
     return this.http.get<Order[]>(`http://localhost:4300/get-courier-orders?courier_id=${courier_id}`);
@@ -44,7 +45,7 @@ export class CourierService {
   }
 
   updateOrderStatus(orderId: number, status: string): Observable<any> {
-    return this.http.put('http://localhost:4300/update-order-status', { id: orderId, status });
+    return this.http.put('http://localhost:4300/update-order-status-admin', {id: orderId, status: status});
   }
 
 }

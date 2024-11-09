@@ -1,26 +1,26 @@
 <app-courier-navbar></app-courier-navbar>
-<h2>All Assigned Orders</h2>
-<table border="1">
-  <thead>
-  <tr>
-    <th>ID</th>
-    <th>Status</th>
-    <th *ngIf="showActions">Actions</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let order of orders">
-    <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
-      {{ order.id }}
-    </td>
-    <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
-      {{ order.status }}
-    </td>
-    <td *ngIf="showActions">
-      <button (click)="acceptOrder(order.id)">Accept</button>
-      <button (click)="declineOrder(order.id)">Decline</button>
-    </td>
-  </tr>
-  </tbody>
-</table>
 
+<div class="container">
+  <h1>All Assigned Orders</h1>
+  <table>
+    <thead>
+    <tr>
+      <th class="header">ID</th>
+      <th class="header">Status</th>
+      <th class="header" *ngIf="showActions">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let order of orders">
+      <td (click)="viewOrderDetails(order.id)">{{ order.id }}</td>
+      <td (click)="viewOrderDetails(order.id)">{{ order.status }}</td>
+      <td *ngIf="showActions">
+        <button *ngIf="order.status !== 'accepted'"(click)="acceptOrder(order.id)" class="accept-button">Accept</button>
+        <button (click)="declineOrder(order.id)" class="decline-button">Decline</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage}}</div>
+</div>

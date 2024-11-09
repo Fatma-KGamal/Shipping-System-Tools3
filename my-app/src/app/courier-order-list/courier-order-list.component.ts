@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {CourierService} from "../courier.service";
-import { AuthService } from "../auth.service";
+import {AuthService} from "../auth.service";
 
 
 interface Order {
@@ -23,12 +23,15 @@ interface Order {
   templateUrl: './courier-order-list.component.html',
   styleUrls: ['./courier-order-list.component.css']
 })
-export class CourierOrderListComponent implements OnInit{
+export class CourierOrderListComponent implements OnInit {
   orders: Order[] = [];
-  courier_id: number=0;
+  courier_id: number = 0;
   showActions = true;
+  errorMessage: string = '';
+  successMessage: string = '';
 
-  constructor( private courierService: CourierService, private router: Router,private authService: AuthService ) {}
+  constructor(private courierService: CourierService, private router: Router, private authService: AuthService) {
+  }
 
   ngOnInit() {
     const userId = this.authService.getUserId();
@@ -55,10 +58,18 @@ export class CourierOrderListComponent implements OnInit{
     this.courierService.acceptOrder(orderId).subscribe(
       response => {
         console.log('Order Accepted Successfully', response);
+        this.successMessage = 'Order Accepted Successfully';
+        const order = this.orders.find(o => o.id === orderId);
+        this.orders = this.orders.map(order =>
+          order.id === orderId ? { ...order, status: 'accepted' } : order
+        );
+        setTimeout(() => this.successMessage = '', 2000);
         this.getAssignedOrders();
       },
       error => {
         console.error('Error accepting order', error);
+        this.errorMessage = 'Error accepting order';
+        setTimeout(() => this.errorMessage = '', 2000);
       }
     );
   }
@@ -67,10 +78,18 @@ export class CourierOrderListComponent implements OnInit{
     this.courierService.declineOrder(orderId).subscribe(
       response => {
         console.log('Order Declined Successfully', response);
+        this.successMessage = 'Order Declined Successfully';
+        const order = this.orders.find(o => o.id === orderId);
+        if (order) {
+          order.status = 'declined';
+        }
+        setTimeout(() => this.successMessage = '', 2000);
         this.getAssignedOrders();
       },
       error => {
         console.error('Error declining order', error);
+        this.errorMessage = 'Error declining order';
+        setTimeout(() => this.errorMessage = '', 2000);
       }
     );
   }

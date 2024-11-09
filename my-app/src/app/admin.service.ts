@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
 
 interface Order {
   id: number;
@@ -20,9 +20,10 @@ interface Order {
 
 export class AdminService {
 
-  constructor(private http:HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
-  getOrderDetails(orderId: number) :Observable<any> {
+  getOrderDetails(orderId: number): Observable<any> {
     return this.http.get(`http://localhost:4300/get-order-details?order_id=${orderId}`);
   }
 
@@ -31,7 +32,7 @@ export class AdminService {
   }
 
   updateOrderStatus(orderId: number, status: string): Observable<any> {
-    return this.http.put('http://localhost:4300/update-order-status-admin', { id: orderId, status: status });
+    return this.http.put('http://localhost:4300/update-order-status-admin', {id: orderId, status: status});
   }
 
   deleteOrder(orderId: number): Observable<any> {
@@ -39,7 +40,7 @@ export class AdminService {
   }
 
   assignOrder(orderId: number, courierId: number): Observable<any> {
-    return this.http.put(`http://localhost:4300/assign-order`, { id: orderId, courier_id: courierId });
+    return this.http.put(`http://localhost:4300/assign-order`, {id: orderId, courier_id: courierId});
   }
 
   getCouriers(): Observable<Array<{ id: number, username: string }>> {

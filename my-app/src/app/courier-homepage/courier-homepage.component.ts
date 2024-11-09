@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {AuthService} from "../auth.service";
 
 @Component({
@@ -7,7 +7,8 @@ import {AuthService} from "../auth.service";
   styleUrls: ['./courier-homepage.component.css']
 })
 export class CourierHomepageComponent {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {
+  }
 
   getUsername() {
     return this.authService.getUsername();

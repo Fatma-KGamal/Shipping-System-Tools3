@@ -1,25 +1,26 @@
 <app-admin-navbar></app-admin-navbar>
-<h2>All Orders</h2>
-<table border="1">
-  <thead>
+
+<div class="container">
+  <h1>All Orders</h1>
+  <table>
+    <thead>
     <tr>
-      <th>ID</th>
-      <th>Status</th>
-      <th>Actions</th>
+      <th class="header">ID</th>
+      <th class="header">Status</th>
+      <th class="header">Actions</th>
     </tr>
-  </thead>
-  <tbody>
+    </thead>
+    <tbody>
     <tr *ngFor="let order of orders">
-      <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
-        {{ order.id }}
-      </td>
-      <td (click)="viewOrderDetails(order.id)" style="cursor: pointer; color: blue;">
-        {{ order.status }}
-      </td>
+      <td (click)="viewOrderDetails(order.id)">{{ order.id }}</td>
+      <td (click)="viewOrderDetails(order.id)">{{ order.status }}</td>
       <td>
-        <button (click)="editOrder(order.id)">Edit</button>
-        <button (click)="deleteOrder(order.id)">Delete</button>
+        <button (click)="editOrder(order.id)" class="edit-button">Edit</button>
+        <button (click)="deleteOrder(order.id)" class="delete-button">Delete</button>
       </td>
     </tr>
-  </tbody>
-</table>
+    </tbody>
+  </table>
+  <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage}}</div>
+</div>

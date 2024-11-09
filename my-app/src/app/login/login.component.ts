@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { Router } from '@angular/router';
+import {Component} from '@angular/core';
+import {AuthService} from '../auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +13,8 @@ export class LoginComponent {
   errorMessages: { email?: string; password?: string; general?: string } = {};
   successMessage: string = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router) {
+  }
 
   onSubmit() {
     this.errorMessages = {};
@@ -32,7 +33,7 @@ export class LoginComponent {
       return;
     }
 
-    const credentials = { email: this.email, password: this.password };
+    const credentials = {email: this.email, password: this.password};
 
     this.authService.login(credentials).subscribe(
       response => {
@@ -41,24 +42,19 @@ export class LoginComponent {
           const userId = this.authService.getUserId();
           const userType = this.authService.getUserType();
           console.log('Logged in user ID:', userId);
-          if (userType == "user")
-          {
+          if (userType == "user") {
             setTimeout(() => {
               this.router.navigate(['/user-home']);
-            }, 2000);
-          }
-          else if(userType == "courier")
-          {
+            }, 1000);
+          } else if (userType == "courier") {
             setTimeout(() => {
               this.router.navigate(['/courier-home']);
-            }, 2000);
+            }, 1000);
+          } else {
+            setTimeout(() => {
+              this.router.navigate(['/admin-home']);
+            }, 1000);
           }
-          else
-            {
-              setTimeout(() => {
-                this.router.navigate(['/admin-home']);
-              }, 2000);
-            }
         }
       },
       error => {

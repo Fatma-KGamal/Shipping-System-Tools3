@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
 interface LoginResponse {
-  userType: string ;
+  userType: string;
   message: string;
   userId: number;
   username: string;
@@ -22,7 +22,8 @@ export class AuthService {
   private userType: string | null = null;
   private username: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   // Login method
   login(credentials: { email: string, password: string }): Observable<LoginResponse> {

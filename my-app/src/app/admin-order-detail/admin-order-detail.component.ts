@@ -20,15 +20,16 @@ interface Order {
   templateUrl: './admin-order-detail.component.html',
   styleUrls: ['./admin-order-detail.component.css']
 })
-export class AdminOrderDetailComponent implements OnInit{
+export class AdminOrderDetailComponent implements OnInit {
   orderDetails: Order | null = null;
   errorMessage: string | null = null;
   couriers: Array<{ id: number, username: string }> = [];
-  statuses: string[] = ['Pending','In Progress','Picked Up','In Transit', 'Delivered','Cancelled'];
+  statuses: string[] = ['Pending', 'In Progress', 'Picked Up', 'In Transit', 'Delivered', 'Cancelled'];
   selectedCourierId: number = 0;
   selectedStatus: string = 'Pending';
 
-  constructor(private route:ActivatedRoute, private router: Router, private adminService: AdminService) {}
+  constructor(private route: ActivatedRoute, private router: Router, private adminService: AdminService) {
+  }
 
   fetchOrderDetails(orderId: number): void {
     this.adminService.getOrderDetails(orderId).subscribe(
@@ -78,7 +79,6 @@ export class AdminOrderDetailComponent implements OnInit{
   }
 
 
-
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');
     if (orderId) {
@@ -91,7 +91,7 @@ export class AdminOrderDetailComponent implements OnInit{
     this.adminService.getCouriers().subscribe(
       (response) => {
         this.couriers = response
-          console.log('Couriers:', this.couriers);
+        console.log('Couriers:', this.couriers);
       },
       (error) => console.error('Error fetching couriers', error)
     );

@@ -23,6 +23,8 @@ interface Order {
 })
 export class UserOrderListComponent implements OnInit{
   orders: Order[] = [];
+  errorMessage: string = '';
+  successMessage: string = '';
 
   constructor( private authService: AuthService, private router: Router,private userService: UserService) {} // Inject AuthService and Router
 
@@ -54,10 +56,12 @@ export class UserOrderListComponent implements OnInit{
     this.userService.deleteOrder(orderId).subscribe(
       response => {
         console.log('Order deleted successfully', response);
+        this.successMessage = 'Order deleted successfully';
         this.orders = this.orders.filter(order => order.id !== orderId);
       },
       error => {
         console.error('Error deleting order', error);
+        this.errorMessage = 'Error deleting order';
       }
     );
   }
