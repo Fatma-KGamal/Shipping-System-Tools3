@@ -14,18 +14,20 @@
   </div>
 
   <ng-template #errorTemplate>
-    <p class="error-message">{{ errorMessages.general || 'Unable to load order details.' }}</p>
+    <div class="error-message">{{ errorMessages.general || 'Unable to load order details.' }}</div>
   </ng-template>
 
-  <label for="courierSelect">Assign Courier:</label>
+  <label for="courierSelect"> {{ orderDetails?.courier_id ? 'Reassign Courier' : 'Assign Courier' }}</label>
   <div class="flex-row">
     <select id="courierSelect" [(ngModel)]="selectedCourierId">
       <option *ngFor="let courier of couriers" [value]="courier.id">{{ courier.username }}</option>
     </select>
-    <button (click)="assignOrder()">Assign Courier</button>
+    <button (click)="assignOrder()">
+      {{ orderDetails?.courier_id ? 'Reassign Courier' : 'Assign Courier' }}
+    </button>
   </div>
-  <p *ngIf="successMessages.assign" class="success-message">{{ successMessages.assign }}</p>
-  <p *ngIf="errorMessages.assign" class="error-message">{{ errorMessages.assign }}</p>
+  <div *ngIf="successMessages.assign" class="success-message">{{ successMessages.assign }}</div>
+  <div *ngIf="errorMessages.assign" class="error-message">{{ errorMessages.assign }}</div>
 
   <label for="statusSelect">Update Order Status:</label>
   <div class="flex-row">
@@ -34,6 +36,6 @@
     </select>
     <button (click)="updateOrderStatus()">Update Order Status</button>
   </div>
-  <p *ngIf="successMessages.status" class="success-message">{{ successMessages.status }}</p>
-  <p *ngIf="errorMessages.status" class="error-message">{{ errorMessages.status }}</p>
+  <div *ngIf="successMessages.status" class="success-message">{{ successMessages.status }}</div>
+  <div *ngIf="errorMessages.status" class="error-message">{{ errorMessages.status }}</div>
 </div>

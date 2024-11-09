@@ -59,11 +59,13 @@ export class CourierOrderListComponent implements OnInit {
       response => {
         console.log('Order Accepted Successfully', response);
         this.successMessage = 'Order Accepted Successfully';
-        // this.orders = this.orders.filter(order => order.id !== orderId);
-        const order = this.orders.find(o => o.id === orderId);
-        this.orders = this.orders.map(order =>
-          order.id === orderId ? {...order, status: 'accepted'} : order
-        );
+
+        // Find the order and update its status to "accepted"
+        const orderIndex = this.orders.findIndex(o => o.id === orderId);
+        if (orderIndex > -1) {
+          this.orders[orderIndex].status = 'Accepted';
+        }
+
         setTimeout(() => this.successMessage = '', 2000);
         this.getAssignedOrders();
       },
@@ -74,6 +76,7 @@ export class CourierOrderListComponent implements OnInit {
       }
     );
   }
+
 
   declineOrder(orderId: number) {
     const confirmDelete = window.confirm('Are you sure you want to decline this order?');

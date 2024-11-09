@@ -13,7 +13,7 @@
   </div>
 
   <ng-template #errorTemplate>
-    <p class="error-message">{{ errorMessages.general || 'Unable to load order details.' }}</p>
+    <div class="error-message">{{ errorMessages.general || 'Unable to load order details.' }}</div>
   </ng-template>
 
   <label for="statusSelect">Update Order Status:</label>
@@ -23,8 +23,8 @@
     </select>
     <button (click)="updateOrderStatus()">Update Order Status</button>
   </div>
-  <p *ngIf="successMessages.status" class="success-message">{{ successMessages.status }}</p>
-  <p *ngIf="errorMessages.status" class="error-message">{{ errorMessages.status }}</p>
+  <div *ngIf="successMessages.status" class="success-message">{{ successMessages.status }}</div>
+  <div *ngIf="errorMessages.status" class="error-message">{{ errorMessages.status }}</div>
 
 </div>
 

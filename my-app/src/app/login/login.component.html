@@ -1,21 +1,26 @@
-<div class="login-container">
-  <div class="container">
-    <h2>Login</h2>
-    <form (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="text" id="email" [(ngModel)]="email" name="email"/>
-        <div *ngIf="errorMessages.email" class="error-message">{{ errorMessages.email }}</div>
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" [(ngModel)]="password" name="password"/>
-        <div *ngIf="errorMessages.password" class="error-message">{{ errorMessages.password }}</div>
-      </div>
-      <a routerLink="/register">Don't have an account? Register</a>
-      <button type="submit">Login</button>
-    </form>
-    <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
-    <div *ngIf="errorMessages.general" class="error-message">{{ errorMessages.general }}</div>
+<section class="landing-content">
+  <div class="landing-logo">
+    <img src="assets/logo.png" alt="ShipFast Logo"/>
   </div>
-</div>
+  <div class="login-container">
+    <div class="container">
+      <h2>Login</h2>
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="text" id="email" [(ngModel)]="email" name="email"/>
+          <div *ngIf="errorMessages.email" class="error-message">{{ errorMessages.email }}</div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" [(ngModel)]="password" name="password"/>
+          <div *ngIf="errorMessages.password" class="error-message">{{ errorMessages.password }}</div>
+        </div>
+        <a routerLink="/register">Don't have an account? Register</a>
+        <button type="submit">Login</button>
+      </form>
+      <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+      <div *ngIf="errorMessages.general" class="error-message">{{ errorMessages.general }}</div>
+    </div>
+  </div>
+</section>
