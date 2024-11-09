@@ -40,4 +40,56 @@ body {
 .error-message {
   color: red;
   font-size: 16px;
+  margin-top: 10px;
 }
+
+.success-message {
+  color: #28a745;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.flex-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+select, button{
+  width: auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+button {
+  background-color: #7e8089;
+  color: white;
+  border: none;
+}
+
+select:hover,
+select:focus {
+  border-color: #80aacf;
+}
+
+button:hover,
+button:focus {
+  background-color: #80aacf;
+  color: black;
+}
+
+label {
+  font-weight: bold;
+  color: #333;
+  margin-top: 20px;
+  margin-bottom:20px ;
+  display: block;
+}
+

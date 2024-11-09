@@ -63,3 +63,6 @@ CREATE TABLE admin (
     email VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL
 );
+
+ALTER TABLE `orders`
+MODIFY `status` ENUM('Pending', 'Accepted', 'Picked Up', 'In Transit', 'Delivered', 'Cancelled') DEFAULT 'Pending';

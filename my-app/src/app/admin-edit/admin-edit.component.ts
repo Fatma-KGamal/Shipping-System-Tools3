@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {AdminService} from "../admin.service";
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute,} from "@angular/router";
+import { AdminService } from "../admin.service";
 
 interface Order {
   id: number;
@@ -10,11 +10,11 @@ interface Order {
   delivery_time: string;
   user_id: number;
   status: string;
-  // courierStatus: string;
   created_at: string;
   updated_at: string;
   courier_id?: number;
 }
+
 
 @Component({
   selector: 'app-admin-edit',
@@ -23,63 +23,66 @@ interface Order {
 })
 export class AdminEditComponent {
   orderDetails: Order | null = null;
-  errorMessage: string = '';
-  successMessage: string = '';
+  errorMessages: { assign?: string; status?: string; general?: string } = {};
+  successMessages: { assign?: string; status?: string; general?: string } = {};
   couriers: Array<{ id: number, username: string }> = [];
-  statuses: string[] = ['Pending', 'In Progress', 'Picked Up', 'In Transit', 'Delivered', 'Cancelled'];
+  statuses: string[] = ['Pending', 'Accepted', 'Picked Up', 'In Transit', 'Delivered', 'Cancelled'];
   selectedCourierId: number = 0;
   selectedStatus: string = 'Pending';
 
-  constructor(private route: ActivatedRoute, private router: Router, private adminService: AdminService) {
-  }
+  constructor(private route: ActivatedRoute, private adminService: AdminService, private cdr: ChangeDetectorRef
+  ) {}
 
   fetchOrderDetails(orderId: number): void {
     this.adminService.getOrderDetails(orderId).subscribe(
       (response) => {
-        console.log('Fetched Order Details:', response);
         this.orderDetails = response;
+        this.cdr.detectChanges();
       },
       (error) => {
-        console.error('Error fetching order details', error);
-        this.errorMessage = 'Could not fetch order details. Please try again.';
+        this.errorMessages.general = 'Could not fetch order details. Please try again.';
+        this.cdr.detectChanges();
       }
     );
   }
 
   assignOrder(): void {
+    this.clearMessages();
     if (this.orderDetails?.id && this.selectedCourierId) {
       this.adminService.assignOrder(this.orderDetails.id, this.selectedCourierId).subscribe(
         () => {
-          this.router.navigate(['/admin-order-detail']);
-          this.successMessage = 'Order assigned successfully';
+          this.successMessages.assign = 'Order assigned successfully';
+          this.refreshOrderDetails();
         },
         (error) => {
-          this.errorMessage = 'Could not assign order. Please try again.';
-          console.error('Assign Order Error:', error);
+          this.errorMessages.assign = 'Could not assign order. Please try again.';
+          this.cdr.detectChanges();
         }
       );
     } else {
-      this.errorMessage = 'Order ID or Courier ID is missing';
+      this.errorMessages.assign = 'Order ID or Courier ID is missing';
+      this.cdr.detectChanges();
     }
   }
 
   updateOrderStatus(): void {
+    this.clearMessages();
     if (this.orderDetails?.id && this.selectedStatus) {
       this.adminService.updateOrderStatus(this.orderDetails.id, this.selectedStatus).subscribe(
         () => {
-          this.router.navigate(['/admin-order-detail']);
-          this.successMessage = 'Order status updated successfully';
+          this.successMessages.status = 'Order status updated successfully';
+          this.refreshOrderDetails();
         },
         (error) => {
-          console.error('Update Status Error:', error);
-          this.errorMessage = 'Could not update order status. Please try again.';
+          this.errorMessages.status = 'Could not update order status. Please try again.';
+          this.cdr.detectChanges();
         }
       );
     } else {
-      this.errorMessage = 'Order ID or Status is missing';
+      this.errorMessages.status = 'Order ID or Status is missing';
+      this.cdr.detectChanges();
     }
   }
-
 
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');
@@ -92,12 +95,23 @@ export class AdminEditComponent {
   fetchCouriers(): void {
     this.adminService.getCouriers().subscribe(
       (response) => {
-        this.couriers = response
-        console.log('Couriers:', this.couriers);
+        this.couriers = response;
+        this.cdr.detectChanges();
       },
-      (error) => console.error('Error fetching couriers', error)
+      (error) => {
+        console.error('Error fetching couriers', error);
+      }
     );
   }
 
+  private refreshOrderDetails(): void {
+    if (this.orderDetails?.id) {
+      this.fetchOrderDetails(this.orderDetails.id);
+    }
+  }
 
+  private clearMessages(): void {
+    this.errorMessages = {};
+    this.successMessages = {};
+  }
 }

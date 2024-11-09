@@ -59,9 +59,10 @@ export class CourierOrderListComponent implements OnInit {
       response => {
         console.log('Order Accepted Successfully', response);
         this.successMessage = 'Order Accepted Successfully';
+        // this.orders = this.orders.filter(order => order.id !== orderId);
         const order = this.orders.find(o => o.id === orderId);
         this.orders = this.orders.map(order =>
-          order.id === orderId ? { ...order, status: 'accepted' } : order
+          order.id === orderId ? {...order, status: 'accepted'} : order
         );
         setTimeout(() => this.successMessage = '', 2000);
         this.getAssignedOrders();
@@ -75,23 +76,28 @@ export class CourierOrderListComponent implements OnInit {
   }
 
   declineOrder(orderId: number) {
-    this.courierService.declineOrder(orderId).subscribe(
-      response => {
-        console.log('Order Declined Successfully', response);
-        this.successMessage = 'Order Declined Successfully';
-        const order = this.orders.find(o => o.id === orderId);
-        if (order) {
-          order.status = 'declined';
+    const confirmDelete = window.confirm('Are you sure you want to decline this order?');
+    if (confirmDelete) {
+      this.successMessage = '';
+      this.errorMessage = '';
+      this.courierService.declineOrder(orderId).subscribe(
+        response => {
+          console.log('Order declined successfully', response);
+          this.successMessage = 'Order declined successfully';
+          this.orders = this.orders.filter(order => order.id !== orderId);
+          setTimeout(() => {
+            this.successMessage = '';
+          }, 2000);
+        },
+        error => {
+          console.error('Error declining order', error);
+          this.errorMessage = 'Error declining order';
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 2000);
         }
-        setTimeout(() => this.successMessage = '', 2000);
-        this.getAssignedOrders();
-      },
-      error => {
-        console.error('Error declining order', error);
-        this.errorMessage = 'Error declining order';
-        setTimeout(() => this.errorMessage = '', 2000);
-      }
-    );
-  }
+      );
 
+    }
+  }
 }

@@ -36,25 +36,40 @@ body {
   font-size: 20px;
   color: #333;
 }
-
 .error-message {
   color: red;
   font-size: 16px;
+  margin-top: 10px;
+}
+.success-message {
+  color: #28a745;
+  font-size: 16px;
+  margin-top: 10px;
 }
 
-select {
-  width: 100%;
-  max-width: 500px;
+.flex-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+select, button{
+  width: auto;
   padding: 10px;
-  margin: 15px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ffffff;
   font-size: 16px;
   color: #333;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: border-color 0.3s ease;
+}
+
+button {
+  background-color: #7e8089;
+  color: white;
+  border: none;
 }
 
 select:hover,
@@ -62,40 +77,16 @@ select:focus {
   border-color: #80aacf;
 }
 
-/* Button styling */
-button {
-  width: 100%;
-  max-width: 500px;
-  padding: 10px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  color: #ffffff;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+button:hover,
+button:focus {
+  background-color: #80aacf;
+  color: black;
 }
 
-button:first-of-type {
-  background-color: #28a745; /* Green for assign button */
-}
-
-button:first-of-type:hover {
-  background-color: #218838;
-}
-
-button:last-of-type {
-  background-color: #007bff; /* Blue for update button */
-}
-
-button:last-of-type:hover {
-  background-color: #0056b3;
-}
-
-/* Label styling */
 label {
   font-weight: bold;
   color: #333;
-  margin-top: 15px;
+  margin-top: 20px;
+  margin-bottom:20px ;
   display: block;
 }

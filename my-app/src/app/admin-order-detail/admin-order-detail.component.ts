@@ -10,7 +10,6 @@ interface Order {
   delivery_time: string;
   user_id: number;
   status: string;
-  courierStatus: string;
   created_at: string;
   updated_at: string;
   courier_id?: number;

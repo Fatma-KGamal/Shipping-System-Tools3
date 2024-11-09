@@ -9,25 +9,31 @@
     <p><strong>Dropoff Location:</strong> {{ orderDetails.dropoff_location }}</p>
     <p><strong>Package Details:</strong> {{ orderDetails.package_details }}</p>
     <p><strong>Order Status:</strong> {{ orderDetails.status }}</p>
-    <p><strong>Courier Status:</strong></p>
     <p><strong>Created At:</strong> {{ orderDetails.created_at }}</p>
     <p><strong>Updated At:</strong> {{ orderDetails.updated_at }}</p>
   </div>
+
   <ng-template #errorTemplate>
-    <p class="error-message">{{ errorMessage || 'Unable to load order details.' }}</p>
+    <p class="error-message">{{ errorMessages.general || 'Unable to load order details.' }}</p>
   </ng-template>
+
+  <label for="courierSelect">Assign Courier:</label>
+  <div class="flex-row">
+    <select id="courierSelect" [(ngModel)]="selectedCourierId">
+      <option *ngFor="let courier of couriers" [value]="courier.id">{{ courier.username }}</option>
+    </select>
+    <button (click)="assignOrder()">Assign Courier</button>
+  </div>
+  <p *ngIf="successMessages.assign" class="success-message">{{ successMessages.assign }}</p>
+  <p *ngIf="errorMessages.assign" class="error-message">{{ errorMessages.assign }}</p>
+
+  <label for="statusSelect">Update Order Status:</label>
+  <div class="flex-row">
+    <select id="statusSelect" [(ngModel)]="selectedStatus">
+      <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+    </select>
+    <button (click)="updateOrderStatus()">Update Order Status</button>
+  </div>
+  <p *ngIf="successMessages.status" class="success-message">{{ successMessages.status }}</p>
+  <p *ngIf="errorMessages.status" class="error-message">{{ errorMessages.status }}</p>
 </div>
-
-<label for="courierSelect">Assign Courier:</label>
-<select id="courierSelect" [(ngModel)]="selectedCourierId">
-  <option *ngFor="let courier of couriers" [value]="courier.id">{{ courier.username }}</option>
-</select>
-<button (click)="assignOrder()">Assign Courier</button>
-
-<label for="statusSelect">Update Order Status:</label>
-<select id="statusSelect" [(ngModel)]="selectedStatus">
-  <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
-</select>
-<button (click)="updateOrderStatus()">Update Order Status</button>
-
-

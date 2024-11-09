@@ -862,6 +862,7 @@ func updateOrderStatusAdmin(w http.ResponseWriter, r *http.Request) {
 		// Execute the prepared statement
 		res, err := updForm.Exec(order.Status, order.ID)
 		if err != nil {
+			println(err.Error())
 			http.Error(w, "Error updating order status", http.StatusInternalServerError)
 			return
 		}
