@@ -30,7 +30,7 @@ const routes: Routes = [
   {path: 'courier-order-list', component: CourierOrderListComponent},
   {path: 'courier-orders', component: CourierOrdersComponent},
   {path: 'courier-order-detail/:id', component: CourierOrderDetailComponent},
-  {path: 'courier-edit-order/::id', component: CourierEditComponent},
+  {path: 'courier-edit-order/:id', component: CourierEditComponent},
   {path: 'admin-home', component: AdminHomepageComponent},
   {path: 'admin-order-list', component: AdminOrderListComponent},
   {path: 'admin-order-detail/:id', component: AdminOrderDetailComponent},
