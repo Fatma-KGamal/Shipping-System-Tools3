@@ -14,6 +14,8 @@ import {AdminHomepageComponent} from './admin-homepage/admin-homepage.component'
 import {AdminOrderListComponent} from './admin-order-list/admin-order-list.component';
 import {AdminOrderDetailComponent} from './admin-order-detail/admin-order-detail.component';
 import {CourierOrderDetailComponent} from "./courier-order-detail/courier-order-detail.component";
+import {AdminEditComponent} from "./admin-edit/admin-edit.component";
+import {CourierEditComponent} from "./courier-edit/courier-edit.component";
 
 
 const routes: Routes = [
@@ -28,9 +30,11 @@ const routes: Routes = [
   {path: 'courier-order-list', component: CourierOrderListComponent},
   {path: 'courier-orders', component: CourierOrdersComponent},
   {path: 'courier-order-detail/:id', component: CourierOrderDetailComponent},
+  {path: 'courier-edit-order/::id', component: CourierEditComponent},
   {path: 'admin-home', component: AdminHomepageComponent},
   {path: 'admin-order-list', component: AdminOrderListComponent},
   {path: 'admin-order-detail/:id', component: AdminOrderDetailComponent},
+  {path: 'admin-edit-order/:id', component: AdminEditComponent},
   {path: '', redirectTo: '/landingpage', pathMatch: 'full'},
 ];
 

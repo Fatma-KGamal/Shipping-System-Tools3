@@ -10,6 +10,7 @@ interface Order {
   delivery_time: string;
   user_id: number;
   status: string;
+  courierStatus: string;
   created_at: string;
   updated_at: string;
   courier_id?: number;
@@ -20,7 +21,7 @@ interface Order {
   templateUrl: './admin-order-detail.component.html',
   styleUrls: ['./admin-order-detail.component.css']
 })
-export class AdminOrderDetailComponent implements OnInit {
+export class AdminOrderDetailComponent implements OnInit{
   orderDetails: Order | null = null;
   errorMessage: string | null = null;
   couriers: Array<{ id: number, username: string }> = [];
@@ -44,57 +45,13 @@ export class AdminOrderDetailComponent implements OnInit {
     );
   }
 
-  assignOrder(): void {
-    if (this.orderDetails?.id && this.selectedCourierId) {
-      this.adminService.assignOrder(this.orderDetails.id, this.selectedCourierId).subscribe(
-        () => {
-          this.router.navigate(['/admin-order-detail']);
-          alert("Courier assigned successfully");
-        },
-        (error) => {
-          this.errorMessage = 'Could not assign order. Please try again.';
-          console.error('Assign Order Error:', error);
-        }
-      );
-    } else {
-      this.errorMessage = 'Order ID or Courier ID is missing';
-    }
-  }
-
-  updateOrderStatus(): void {
-    if (this.orderDetails?.id && this.selectedStatus) {
-      this.adminService.updateOrderStatus(this.orderDetails.id, this.selectedStatus).subscribe(
-        () => {
-          this.router.navigate(['/admin-order-detail']);
-          alert("Order status updated successfully");
-        },
-        (error) => {
-          console.error('Update Status Error:', error);
-          this.errorMessage = 'Could not update order status. Please try again.';
-        }
-      );
-    } else {
-      this.errorMessage = 'Order ID or Status is missing';
-    }
-  }
-
-
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');
     if (orderId) {
       this.fetchOrderDetails(+orderId);
-      this.fetchCouriers();
     }
   }
 
-  fetchCouriers(): void {
-    this.adminService.getCouriers().subscribe(
-      (response) => {
-        this.couriers = response
-        console.log('Couriers:', this.couriers);
-      },
-      (error) => console.error('Error fetching couriers', error)
-    );
-  }
+
 
 }

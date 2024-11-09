@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { Router } from '@angular/router';
-import { UserService } from '../user.service';
+import {Component, OnInit} from '@angular/core';
+import {AuthService} from '../auth.service';
+import {Router} from '@angular/router';
+import {UserService} from '../user.service';
 
 
 interface Order {
@@ -21,12 +21,13 @@ interface Order {
   templateUrl: './user-order-list.component.html',
   styleUrls: ['./user-order-list.component.css']
 })
-export class UserOrderListComponent implements OnInit{
+export class UserOrderListComponent implements OnInit {
   orders: Order[] = [];
   errorMessage: string = '';
   successMessage: string = '';
 
-  constructor( private authService: AuthService, private router: Router,private userService: UserService) {} // Inject AuthService and Router
+  constructor(private authService: AuthService, private router: Router, private userService: UserService) {
+  } // Inject AuthService and Router
 
   ngOnInit() {
     this.getUserOrders();
@@ -53,17 +54,30 @@ export class UserOrderListComponent implements OnInit{
   }
 
   deleteOrder(orderId: number) {
-    this.userService.deleteOrder(orderId).subscribe(
-      response => {
-        console.log('Order deleted successfully', response);
-        this.successMessage = 'Order deleted successfully';
-        this.orders = this.orders.filter(order => order.id !== orderId);
-      },
-      error => {
-        console.error('Error deleting order', error);
-        this.errorMessage = 'Error deleting order';
-      }
-    );
+    const confirmDelete = window.confirm('Are you sure you want to delete this order?');
+
+    if (confirmDelete) {
+      this.successMessage = '';
+      this.errorMessage = '';
+
+      this.userService.deleteOrder(orderId).subscribe(
+        response => {
+          console.log('Order deleted successfully', response);
+          this.successMessage = 'Order deleted successfully';
+          this.orders = this.orders.filter(order => order.id !== orderId);
+          setTimeout(() => {
+            this.successMessage = '';
+          }, 2000);
+        },
+        error => {
+          console.error('Error deleting order', error);
+          this.errorMessage = 'Error deleting order';
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 2000);
+        }
+      );
+    }
   }
 
 }

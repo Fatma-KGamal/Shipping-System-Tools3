@@ -12,6 +12,7 @@ interface Order {
   delivery_time: string;
   user_id: number;
   status: string;
+  // CourierStatus: string;
   created_at: string;
   updated_at: string;
   courier_id?: number;
@@ -55,21 +56,32 @@ export class AdminOrderListComponent implements OnInit {
   }
 
   deleteOrder(orderId: number) {
-    this.adminService.deleteOrder(orderId).subscribe(
-      response => {
-        console.log('Order Deleted Successfully', response);
-        this.orders = this.orders.filter((order) => order.id !== orderId);
-        this.successMessage = 'Order deleted Successfully';
-      },
-      error => {
-        console.log('Error deleting order', error);
-        this.errorMessage = 'Error deleting order';
-      });
-
+    const confirmDelete = window.confirm('Are you sure you want to delete this order?');
+    if (confirmDelete) {
+      this.successMessage = '';
+      this.errorMessage = '';
+      this.adminService.deleteOrder(orderId).subscribe(
+        response => {
+          console.log('Order deleted successfully', response);
+          this.successMessage = 'Order deleted successfully';
+          this.orders = this.orders.filter(order => order.id !== orderId);
+          setTimeout(() => {
+            this.successMessage = '';
+          }, 2000);
+        },
+        error => {
+          console.error('Error deleting order', error);
+          this.errorMessage = 'Error deleting order';
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 2000);
+        }
+      );
+    }
   }
 
   editOrder(orderId: number) {
-    this.router.navigate(['/admin-order-detail', orderId]);
+    this.router.navigate(['/admin-edit-order', orderId]);
   }
 
   logout() {

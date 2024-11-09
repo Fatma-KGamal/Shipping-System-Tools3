@@ -15,7 +15,7 @@
       <td (click)="viewOrderDetails(order.id)" >{{ order.id }}</td>
       <td (click)="viewOrderDetails(order.id)" >{{ order.status }}</td>
       <td>
-        <button *ngIf="order.status === 'Pending'" (click)="deleteOrder(order.id)">Delete</button>
+        <button *ngIf="order.status === 'Pending'" (click)="deleteOrder(order.id)" class="delete-button">Delete</button>
       </td>
     </tr>
   </tbody>

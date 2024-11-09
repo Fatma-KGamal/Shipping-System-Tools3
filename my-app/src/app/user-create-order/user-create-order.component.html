@@ -1,22 +1,47 @@
 <app-user-navbar></app-user-navbar>
 
-<form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
-    <label for="pickupLocation">Pickup Location:</label>
-    <input id="pickupLocation" formControlName="pickupLocation" required>
-    
-    <label for="dropoffLocation">Dropoff Location:</label>
-    <input id="dropoffLocation" formControlName="dropoffLocation" required>
-    
-    <label for="packageDetails">Package Details:</label>
-    <input id="packageDetails" formControlName="packageDetails" required>
-    
-    <label for="deliveryTime">Delivery Time:</label>
-    <input id="deliveryTime" formControlName="deliveryTime" type="datetime-local">
-    
-    <button type="submit">Create Order</button>
-    
-    <!-- Display error message if there is one -->
-    <div *ngIf="errorMessage" style="color: red;">{{ errorMessage }}</div>
-  
-  </form>
-  
+<div class="order-container">
+  <div class="container">
+    <h2>Create Order</h2>
+    <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="pickupLocation">Pickup Location:</label>
+        <input id="pickupLocation" formControlName="pickupLocation" required>
+        <div *ngIf="orderForm.get('pickupLocation')?.invalid && orderForm.get('pickupLocation')?.touched"
+             class="error-message">
+          {{ errorMessages.pickupLoc || 'Pickup Location is required' }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="dropoffLocation">Dropoff Location:</label>
+        <input id="dropoffLocation" formControlName="dropoffLocation" required>
+        <div *ngIf="orderForm.get('dropoffLocation')?.invalid && orderForm.get('dropoffLocation')?.touched"
+             class="error-message">
+          {{ errorMessages.dropoffLoc || 'Dropoff Location is required' }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="packageDetails">Package Details:</label>
+        <input id="packageDetails" formControlName="packageDetails" required>
+        <div *ngIf="orderForm.get('packageDetails')?.invalid && orderForm.get('packageDetails')?.touched"
+             class="error-message">
+          {{ errorMessages.details || 'Package Details are required' }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="deliveryTime">Delivery Time:</label>
+        <input id="deliveryTime" formControlName="deliveryTime" type="datetime-local">
+      </div>
+
+      <button type="submit">Create Order</button>
+
+      <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+      <div *ngIf="errorMessages.general" class="error-message">{{ errorMessages.general }}</div>
+
+    </form>
+
+  </div>
+</div>

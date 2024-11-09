@@ -1,4 +1,4 @@
-<app-user-navbar></app-user-navbar>
+<app-courier-navbar></app-courier-navbar>
 
 <div class="container">
   <h2>Order Details</h2>
@@ -8,6 +8,7 @@
     <p><strong>Dropoff Location:</strong> {{ orderDetails.dropoff_location }}</p>
     <p><strong>Package Details:</strong> {{ orderDetails.package_details }}</p>
     <p><strong>Status:</strong> {{ orderDetails.status }}</p>
+    <p><strong>Courier Status:</strong></p>
     <p><strong>Created At:</strong> {{ orderDetails.created_at }}</p>
     <p><strong>Updated At:</strong> {{ orderDetails.updated_at }}</p>
   </div>
@@ -17,3 +18,9 @@
   </ng-template>
 </div>
 
+
+<label for="statusSelect">Update Order Status:</label>
+<select id="statusSelect" [(ngModel)]="selectedStatus">
+  <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+</select>
+<button (click)="updateOrderStatus()">Update Order Status</button>

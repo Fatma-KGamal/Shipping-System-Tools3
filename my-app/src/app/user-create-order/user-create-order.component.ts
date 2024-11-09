@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../auth.service';
-import { UserService } from '../user.service';
-import { Router } from '@angular/router';
+import {Component} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AuthService} from '../auth.service';
+import {UserService} from '../user.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-user-create-order',
@@ -13,8 +13,14 @@ export class UserCreateOrderComponent {
 
   orderForm: FormGroup;
   errorMessage: string | null = null;
+  errorMessages: { pickupLoc?: string; dropoffLoc?: string; details?: string; general?: string } = {};
+  successMessage: string = '';
+  pickupLocation: any;
+  dropoffLocation: any;
+  packageDetails: any;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router ,private userService: UserService,) {
+
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private userService: UserService,) {
 
     const defaultDeliveryTime = this.getDefaultDeliveryTime();
 
@@ -35,6 +41,8 @@ export class UserCreateOrderComponent {
   }
 
   onSubmit() {
+    this.errorMessages = {};
+    this.successMessage = '';
     if (this.orderForm.valid) {
       const payload = {
         pickup_location: this.orderForm.value.pickupLocation,
@@ -49,17 +57,26 @@ export class UserCreateOrderComponent {
       this.userService.createOrder(payload).subscribe(
         response => {
           console.log('Order created successfully', response);
-          alert('Order created successfully!');
-          this.router.navigate(['/user-home']);
+          this.successMessage = 'Order created successfully!';
+          setTimeout(() => {
+            this.router.navigate(['/user-order-list']);
+          }, 1000);
         },
         error => {
           console.error('Error creating order', error);
-          this.errorMessage = error.error.message || 'An error occurred while creating the order.';
+          this.errorMessages.general = error.error?.error || 'An error occurred while creating the order.';
         }
       );
     } else {
       console.error('Form is invalid');
-      this.errorMessage = 'Please fill in all required fields.';
+      this.markFormFieldsTouched();
     }
+  }
+
+  private markFormFieldsTouched() {
+    Object.keys(this.orderForm.controls).forEach(field => {
+      const control = this.orderForm.get(field);
+      control?.markAsTouched({onlySelf: true});
+    });
   }
 }

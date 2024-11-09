@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { UserService } from '../user.service';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {UserService} from '../user.service';
 
 @Component({
   selector: 'app-user-order-detail',
@@ -11,7 +11,8 @@ export class UserOrderDetailComponent implements OnInit {
   orderDetails: any = null;
   errorMessage: string | null = null;
 
-  constructor(private route: ActivatedRoute,private userService: UserService) {}
+  constructor(private route: ActivatedRoute, private userService: UserService) {
+  }
 
   ngOnInit(): void {
     const orderId = this.route.snapshot.paramMap.get('id');

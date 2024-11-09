@@ -53,17 +53,9 @@ export class CourierOrdersComponent implements OnInit {
     this.router.navigate(['/courier-order-detail', orderId]);
   }
 
-  updateOrderStatus(orderId: number, status: string): void {
-    this.courierService.updateOrderStatus(orderId, status).subscribe(
-      () => {
-        this.getAcceptedOrders();
-        this.successMessage = 'Order status updated successfully';
-      },
-      (error) => {
-        console.error('Update Order Status Error:', error);
-        this.errorMessage = 'Could not update order status. Please try again.';
-      }
-    );
+  updateOrderStatus(orderId: number): void {
+    this.router.navigate(['/courier-edit-order', orderId]);
   }
+
 
 }

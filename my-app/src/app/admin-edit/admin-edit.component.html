@@ -18,5 +18,16 @@
   </ng-template>
 </div>
 
+<label for="courierSelect">Assign Courier:</label>
+<select id="courierSelect" [(ngModel)]="selectedCourierId">
+  <option *ngFor="let courier of couriers" [value]="courier.id">{{ courier.username }}</option>
+</select>
+<button (click)="assignOrder()">Assign Courier</button>
+
+<label for="statusSelect">Update Order Status:</label>
+<select id="statusSelect" [(ngModel)]="selectedStatus">
+  <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+</select>
+<button (click)="updateOrderStatus()">Update Order Status</button>
 
 

@@ -21,6 +21,8 @@ import {AdminOrderDetailComponent} from './admin-order-detail/admin-order-detail
 import {AdminOrderListComponent} from './admin-order-list/admin-order-list.component';
 import {AdminNavbarComponent} from './admin-navbar/admin-navbar.component';
 import {CourierOrderDetailComponent} from './courier-order-detail/courier-order-detail.component';
+import { AdminEditComponent } from './admin-edit/admin-edit.component';
+import { CourierEditComponent } from './courier-edit/courier-edit.component';
 
 
 @NgModule({
@@ -44,6 +46,8 @@ import {CourierOrderDetailComponent} from './courier-order-detail/courier-order-
     AdminOrderListComponent,
     AdminNavbarComponent,
     CourierOrderDetailComponent,
+    AdminEditComponent,
+    CourierEditComponent,
 
   ],
   imports: [
