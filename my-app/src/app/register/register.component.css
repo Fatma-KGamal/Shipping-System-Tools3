@@ -30,6 +30,17 @@ h2 {
   margin-bottom: 15px;
 }
 
+.form-group1{
+  margin-bottom: 15px;
+  display: flex;
+}
+
+.form-group label {
+  display: block;
+  text-align: start;
+  padding-left: 10px;
+}
+
 input[type="text"],
 input[type="email"],
 input[type="password"] {

@@ -25,8 +25,8 @@ export class CourierEditComponent implements OnInit{
   orderDetails: Order| null = null;
   errorMessages: { status?: string; general?: string } = {};
   successMessages: { status?: string; general?: string } = {};
-  statuses: string[] = ['Pending', 'Accepted', 'Picked Up', 'In Transit', 'Delivered', 'Cancelled'];
-  selectedStatus: string = 'Pending';
+  statuses: string[] = [ 'Accepted', 'Picked Up', 'In Transit', 'Delivered', 'Cancelled'];
+  selectedStatus: string = 'Accepted';
   selectedCourierId: number = 0;
 
   constructor(private route: ActivatedRoute, private router: Router, private courierService: CourierService,private cdr: ChangeDetectorRef) {

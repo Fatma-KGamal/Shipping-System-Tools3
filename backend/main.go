@@ -721,7 +721,7 @@ func getAcceptedOrders(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 
 		// Query to fetch all orders for the specified user
-		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at, user_id FROM `orders` WHERE courier_id = ? AND status = 'Accepted'", courierID)
+		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at, user_id FROM `orders` WHERE courier_id = ? AND status != 'Pending' ", courierID)
 		if err != nil {
 			http.Error(w, "Error fetching orders", http.StatusInternalServerError)
 			return

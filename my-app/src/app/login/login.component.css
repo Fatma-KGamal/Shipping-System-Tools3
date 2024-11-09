@@ -31,6 +31,12 @@ h2 {
   margin-bottom: 20px;
 }
 
+.form-group label {
+  display: block;
+  text-align: start;
+  padding-left: 10px;
+}
+
 input[type="text"],
 input[type="password"] {
   width: 95%;
