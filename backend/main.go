@@ -3,13 +3,13 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	_ "github.com/go-sql-driver/mysql"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"strconv"
 	"text/template"
-
-	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 // User struct holds user data
@@ -286,6 +286,16 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		db := dbConn()
 		defer db.Close()
 
+		// Parse DeliveryTime if it is not empty
+		if order.DeliveryTime != "" {
+			parsedTime, err := time.Parse(time.RFC3339, order.DeliveryTime)
+			if err != nil {
+				http.Error(w, "Invalid delivery time format", http.StatusBadRequest)
+				return
+			}
+			order.DeliveryTime = parsedTime.Format("2006-01-02 15:04:05") // MySQL datetime format
+		}
+
 		// insert new order query
 		insForm, err := db.Prepare("INSERT INTO `orders` (pickup_location, dropoff_location, package_details, delivery_time, user_id, status) VALUES (?, ?, ?, ?, ?, ?)")
 		if err != nil {
@@ -300,6 +310,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		// execute query
 		_, err = insForm.Exec(order.PickupLocation, order.DropoffLocation, order.PackageDetails, order.DeliveryTime, order.UserID, order.Status)
 		if err != nil {
+			println(err.Error())
 			http.Error(w, "Error creating order", http.StatusInternalServerError)
 			return
 		}
@@ -324,7 +335,7 @@ func GetUserOrders(w http.ResponseWriter, r *http.Request) {
 		defer db.Close()
 
 		// Query to fetch all orders for the specified user
-		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at FROM `orders` WHERE user_id = ?", userID)
+		rows, err := db.Query("SELECT order_id, pickup_location, dropoff_location, package_details, delivery_time, status, courier_id, created_at, updated_at, user_id FROM `orders` WHERE user_id = ?", userID)
 		if err != nil {
 			http.Error(w, "Error fetching orders", http.StatusInternalServerError)
 			return
@@ -342,7 +353,7 @@ func GetUserOrders(w http.ResponseWriter, r *http.Request) {
 			err := rows.Scan(
 				&order.ID, &order.PickupLocation, &order.DropoffLocation,
 				&order.PackageDetails, &deliveryTime, &order.Status,
-				&courierID, &order.CreatedAt, &order.UpdatedAt,
+				&courierID, &order.CreatedAt, &order.UpdatedAt, &order.UserID,
 			)
 			if err != nil {
 				http.Error(w, "Error scanning order data", http.StatusInternalServerError)
